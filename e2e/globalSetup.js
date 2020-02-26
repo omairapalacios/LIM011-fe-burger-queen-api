@@ -2,7 +2,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 const nodeFetch = require('node-fetch');
 const kill = require('tree-kill');
-
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const config = require('../config');
 
 const port = process.env.PORT || 8888;
@@ -110,6 +110,11 @@ module.exports = () => new Promise((resolve, reject) => {
   }
 
   // TODO: Configurar DB de tests
+  const mongod = new MongoMemoryServer();
+  mongod.getConnectionString().then((mongoUrl) => {
+    process.env.DB_URL = mongoUrl;
+    console.info('Mongo memory server run ', mongoUrl);
+  });
 
   console.info('Staring local server...');
   const child = spawn('npm', ['start', process.env.PORT || 8888], {

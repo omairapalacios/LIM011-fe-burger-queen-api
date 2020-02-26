@@ -19,11 +19,25 @@ module.exports = (app, nextMain) => {
    */
   app.post('/auth', (req, resp, next) => {
     const { email, password } = req.body;
-
     if (!email || !password) {
       return next(400);
     }
-
+    if (email === config.adminEmail && password === config.adminPassword) {
+      console.log(resp.status(200).json());
+      // return resp.status(200).json({});
+      const payload = {
+        check: true,
+      };
+      const token = jwt.sign(payload, secret, {
+        expiresIn: 1440,
+      });
+      resp.json({
+        mensaje: 'Autenticación correcta',
+        token,
+      });
+    } else {
+      resp.json({ mensaje: 'Usuario o contraseña incorrectos' });
+    }
     // TODO: autenticar a la usuarix
     next();
   });

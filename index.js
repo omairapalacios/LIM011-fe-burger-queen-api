@@ -18,17 +18,13 @@ app.use(authMiddleware(secret));
 
 // Registrar rutas
 routes(app, (err) => {
-  if (err) {
-    throw err;
-  }
+  if (err) throw err;
   app.use(errorHandler);
   app.listen(port, () => {
     console.info(`App listening on port ${port}`);
+
     // Connect to the db native form
-    MongoClient.connect(dbUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }, (err, db) => {
+    MongoClient.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err, db) => {
       if (err) throw err;
       console.log('Connection sucessful');
       db.close();

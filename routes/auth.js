@@ -22,23 +22,18 @@ module.exports = (app, nextMain) => {
     if (!email || !password) {
       return next(400);
     }
-    if (email === config.adminEmail && password === config.adminPassword) {
-      console.log(resp.status(200).json());
-      // return resp.status(200).json({});
-      const payload = {
-        check: true,
-      };
-      const token = jwt.sign(payload, secret, {
-        expiresIn: 1440,
-      });
-      resp.json({
-        mensaje: 'Autenticación correcta',
-        token,
-      });
-    } else {
-      resp.json({ mensaje: 'Usuario o contraseña incorrectos' });
-    }
     // TODO: autenticar a la usuarix
+    if (email === config.adminEmail && password === config.adminPassword) {
+      // console.log(resp.status(200).json());
+      const payload = {
+        id: '1',
+        iss: 'burgerqueen',
+      };
+      const token = jwt.sign(payload, secret, { expiresIn: 1440 });
+      console.log('token: ', token);
+      // return token;
+      resp.status(200).json(token);
+    }
     next();
   });
 

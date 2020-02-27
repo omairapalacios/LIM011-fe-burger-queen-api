@@ -7,6 +7,7 @@ const {
 
 const {
   getUsers,
+  createUser,
 } = require('../controller/users');
 
 
@@ -21,10 +22,7 @@ const initAdminUser = (app, next) => {
     password: bcrypt.hashSync(adminPassword, 10),
     roles: { admin: true },
   };
-
-  // TODO: crear usuaria admin
-  
-  next();
+  next(createUser(adminUser));
 };
 
 

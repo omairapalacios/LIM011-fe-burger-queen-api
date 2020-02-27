@@ -1,5 +1,6 @@
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn } = require('child_process'); // lsof -i:8888 kill -9 28180
+
 const nodeFetch = require('node-fetch');
 const kill = require('tree-kill');
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -33,7 +34,7 @@ const fetch = (url, opts = {}) => nodeFetch(`${baseUrl}${url}`, {
   ...opts,
   headers: {
     'content-type': 'application/json',
-    ...opts.headers,
+    ...opts.headers, // *
   },
   ...(
     opts.body && typeof opts.body !== 'string'

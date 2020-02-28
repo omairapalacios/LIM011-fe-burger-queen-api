@@ -1,16 +1,24 @@
-const connectDB = require('./connectDB');
 const config = require('../config');
+const getDatabase = require('./connectDB');
 
-// const collectionUser = () => connectDB.getDatabase(config.dbUrl).collection('users');
-
-const collectionUser = () => {
-  const db = connectDB(config.dbUrl);
-  console.log('la bd es: ', db);
-  const coleccion = db.collection('users');
-  // console.log('Soy la coleccion: ', coleccion);
-  // return coleccion;
-};
+const collectionUser = (dbUrl) => getDatabase(dbUrl)
+  .then((dataBase) => dataBase.collection('user'));
 
 module.exports = collectionUser;
 
-collectionUser();
+collectionUser(config.dbUrl);
+
+/**
+ * getDatabase(config.dbUrl).then((r) => {
+  console.log(r);
+  const adminUser = {
+    email: 'admin@laboratoria.com',
+    password: 'abcd',
+    roles: { admin: true },
+  };
+  r.collection('user').insertOne(adminUser, (err, result) => {
+    if (err) throw err;
+    console.log('Datos: ', result);
+  });
+});
+ */

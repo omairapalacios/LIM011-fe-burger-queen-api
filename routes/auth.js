@@ -19,42 +19,34 @@ module.exports = (app, nextMain) => {
    * @code {400} si no se proveen `email` o `password` o ninguno de los dos
    * @auth No requiere autenticación
    */
+  // Valida el ingreso de email y password
   app.post('/auth', (req, resp, next) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return next(400);
     }
-
-
+    // Valida el ingreso de email y password de cada usuario y genera token
     return collection(config.dbUrl)
       .then((collectionUser) => {
-        collectionUser.findOne({ email })
-          .then((resolve) => {
-            // bcrypt.compare(resolve.password, password).then((e) => console.log(e));
-            if (resolve.email === email && bcrypt.compare(resolve.password, password)) {
+        return collectionUser.findOne({ email })
+          .then((doc) => {
+            if (doc === null) {
+              return next(400);
+            }
+
+            if (doc.email === email && bcrypt.compare(doc.password, password)) {
               const payload = {
-                id: '1',
-                iss: 'burgerqueen',
+                uid: doc._id,
+                iss: 'burger-queen-api',
+                exp: 60 * 60 * 24,
               };
-              const token = jwt.sign(payload, secret, { expiresIn: 1440 });
+              const token = jwt.sign(payload, secret);
               console.log('token: ', token);
               return resp.status(200).json(token);
             }
           });
       });
-    // TODO: autenticar a la usuarix
-    /* if (email === req.email && password === req.password) {
-      // console.log(resp.status(200).json());
-      const payload = {
-        id: '1',
-        iss: 'burgerqueen',
-      };
-      const token = jwt.sign(payload, secret, { expiresIn: 1440 });
-      console.log('token: ', token);
-      // return token;
-      resp.status(200).json(token);
-    } */
-    next();
+    // next();
   });
 
   return nextMain();

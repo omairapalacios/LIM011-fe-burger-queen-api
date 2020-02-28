@@ -12,7 +12,7 @@ const {
   // createUser,
 } = require('../controller/users');
 
-
+// Valida el ingreso de email y password de las variables globales
 const initAdminUser = (app, next) => {
   const { adminEmail, adminPassword } = app.get('config');
   if (!adminEmail || !adminPassword) {
@@ -25,30 +25,29 @@ const initAdminUser = (app, next) => {
     roles: { admin: true },
   };
 
-  // TODO: crear usuaria admin
+  // TODO: crear usuario admin
   collection(config.dbUrl)
     .then((collectionUser) => {
-      // const query = { email: adminEmail };
       collectionUser.findOne({ email: adminEmail })
-        .then((resolve) => {
-          if (resolve === null) {
+        .then((doc) => {
+          if (doc === null) {
             collection(config.dbUrl)
               .then((collectionUser) => {
                 collectionUser.createIndex({ email: 1 }, { unique: true })
-                  .then((e) => {
-                    console.log('eeeee', e);
+                  .then((index) => {
+                    console.log('indice creado', index);
                     collection(config.dbUrl)
                       .then((collectionUser) => {
                         collectionUser.insertOne(adminUser)
-                          .then((resolve) => {
-                            console.log('Data Insertada:', resolve);
+                          .then((doc) => {
+                            console.log('Usuario Admin fue creado exitosamente :', doc);
                           });
                       });
                   });
               });
           }
-          console.log('USUARIO ENCONTRADO:', resolve);
-          return resolve;
+          console.log('Usuario Admin fue encontrado:', doc);
+          return doc;
         })
         .catch((err) => console.log(err));
     });

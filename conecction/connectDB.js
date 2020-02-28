@@ -1,10 +1,11 @@
 const { MongoClient } = require('mongodb');
+const config = require('../config');
 
 let database;
 
-const getDatabase = (dbUrl) => {
+const getDatabase = () => {
   if (!database) {
-    return MongoClient.connect(dbUrl, { useUnifiedTopology: true })
+    return MongoClient.connect(config.dbUrl, { useUnifiedTopology: true })
       .then((dBase) => {
         database = dBase.db();
         return database;

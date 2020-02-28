@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const config = require('../config');
+const collection = require('../conecction/collectionUser');
 
 const {
   requireAuth,
@@ -7,7 +9,7 @@ const {
 
 const {
   getUsers,
-  createUser,
+  // createUser,
 } = require('../controller/users');
 
 
@@ -24,6 +26,31 @@ const initAdminUser = (app, next) => {
   };
 
   // TODO: crear usuaria admin
+  collection(config.dbUrl)
+    .then((collectionUser) => {
+      // console.log(collectionUser);
+      collectionUser.createIndex({ email: 1 }, { unique: true })
+        .then((e) => {
+          console.log('eeeee', e);
+          collection(config.dbUrl)
+            .then((collectionUser) => {
+              collectionUser.insertOne(adminUser)
+                .then((resolve) => {
+                  console.log('Data Insertada:', resolve);
+                });
+            });
+        });
+    })
+    .catch((err) => console.log(err));
+
+  /* collection(config.dbUrl)
+    .then((collectionUser) => {
+      collectionUser.insertOne(adminUser)
+        .then((resolve) => {
+          console.log('Data Insertada:', resolve);
+        });
+    })
+    .catch((err) => console.log(err)); */
 
   next();
 };
@@ -118,7 +145,8 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', requireAdmin, createUser);
+  app.post('/users', requireAdmin, (req, resp, next) => {
+  });
 
   /**
    * @name PUT /users

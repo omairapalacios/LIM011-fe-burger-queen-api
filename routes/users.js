@@ -28,6 +28,34 @@ const initAdminUser = (app, next) => {
   // TODO: crear usuaria admin
   collection(config.dbUrl)
     .then((collectionUser) => {
+      // const query = { email: adminEmail };
+      collectionUser.findOne({ email: adminEmail })
+        .then((resolve) => {
+          if (resolve === null) {
+            collection(config.dbUrl)
+              .then((collectionUser) => {
+                collectionUser.createIndex({ email: 1 }, { unique: true })
+                  .then((e) => {
+                    console.log('eeeee', e);
+                    collection(config.dbUrl)
+                      .then((collectionUser) => {
+                        collectionUser.insertOne(adminUser)
+                          .then((resolve) => {
+                            console.log('Data Insertada:', resolve);
+                          });
+                      });
+                  });
+              });
+          }
+          console.log('USUARIO ENCONTRADO:', resolve);
+          return resolve;
+        })
+        .catch((err) => console.log(err));
+    });
+
+
+  /* collection(config.dbUrl)
+    .then((collectionUser) => {
       // console.log(collectionUser);
       collectionUser.createIndex({ email: 1 }, { unique: true })
         .then((e) => {
@@ -41,7 +69,7 @@ const initAdminUser = (app, next) => {
             });
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(err)); */
 
   /* collection(config.dbUrl)
     .then((collectionUser) => {

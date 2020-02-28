@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const config = require('../config');
+const collection = require('../conecction/collectionUser');
 
 const { secret } = config;
 
@@ -22,8 +24,26 @@ module.exports = (app, nextMain) => {
     if (!email || !password) {
       return next(400);
     }
+
+
+    return collection(config.dbUrl)
+      .then((collectionUser) => {
+        collectionUser.findOne({ email })
+          .then((resolve) => {
+            // bcrypt.compare(resolve.password, password).then((e) => console.log(e));
+            if (resolve.email === email && bcrypt.compare(resolve.password, password)) {
+              const payload = {
+                id: '1',
+                iss: 'burgerqueen',
+              };
+              const token = jwt.sign(payload, secret, { expiresIn: 1440 });
+              console.log('token: ', token);
+              return resp.status(200).json(token);
+            }
+          });
+      });
     // TODO: autenticar a la usuarix
-    if (email === config.adminEmail && password === config.adminPassword) {
+    /* if (email === req.email && password === req.password) {
       // console.log(resp.status(200).json());
       const payload = {
         id: '1',
@@ -33,7 +53,7 @@ module.exports = (app, nextMain) => {
       console.log('token: ', token);
       // return token;
       resp.status(200).json(token);
-    }
+    } */
     next();
   });
 

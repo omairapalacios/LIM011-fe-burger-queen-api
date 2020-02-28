@@ -4,14 +4,23 @@ const config = require('../config');
 module.exports = {
   getUsers: (req, resp, next) => {
   },
-  createUser: (req) => {
-    console.log(req);
-    // const { email, password, roles } = req.body;
+  // getUsersAdmin: () => {},
+  createUser: (req, resp) => {
+    // console.log(req);
+    const { email, password, roles = { admin: false } } = req.body;
     collection(config.dbUrl)
       .then((collectionUser) => {
-        collectionUser.insertOne(req.body)
-          .then((resolve) => {
-            console.log('Data Insertada:', resolve);
+      // console.log(collectionUser);
+        collectionUser.createIndex({ email: 1 }, { unique: true })
+          .then((e) => {
+            console.log('eeeeeeee!!!', e);
+            collection(config.dbUrl)
+              .then((collectionUser) => {
+                collectionUser.insertOne({ email, password, roles })
+                  .then((resolve) => {
+                    console.log('Data Insertada:', resolve);
+                  });
+              });
           });
       })
       .catch((err) => console.log(err));

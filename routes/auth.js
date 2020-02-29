@@ -26,7 +26,7 @@ module.exports = (app, nextMain) => {
       return next(400);
     }
     // Valida el ingreso de email y password de cada usuario y genera token
-    return collection(config.dbUrl)
+    return collection()
       .then((collectionUser) => {
         return collectionUser.findOne({ email })
           .then((doc) => {

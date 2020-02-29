@@ -11,7 +11,7 @@ module.exports = {
       return next(400);
     }
     // No utilizado
-    collection(config.dbUrl)
+    collection()
       .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
       .then((index) => {
         console.log('indice creado', index);

@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const config = require('../config');
 const collection = require('../conecction/collectionUser');
 
 const {
@@ -9,7 +8,7 @@ const {
 
 const {
   getUsers,
-  // createUser,
+  createUser,
 } = require('../controller/users');
 
 // Valida el ingreso de email y password de las variables globales
@@ -24,18 +23,17 @@ const initAdminUser = (app, next) => {
     password: bcrypt.hashSync(adminPassword, 10),
     roles: { admin: true },
   };
-
   // TODO: crear usuario admin
-  collection(config.dbUrl)
+  collection()
     .then((collectionUser) => {
       collectionUser.findOne({ email: adminEmail })
         .then((doc) => {
           if (doc === null) {
-            collection(config.dbUrl)
+            collection()
               .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
               .then((index) => {
                 console.log('indice creado', index);
-                return collection(config.dbUrl);
+                return collection();
               })
               .then((collectionUser) => collectionUser.insertOne(adminUser))
               .then((doc) => {
@@ -47,33 +45,6 @@ const initAdminUser = (app, next) => {
         })
         .catch((err) => console.log(err));
     });
-
-  /* collection(config.dbUrl)
-    .then((collectionUser) => {
-      // console.log(collectionUser);
-      collectionUser.createIndex({ email: 1 }, { unique: true })
-        .then((e) => {
-          console.log('eeeee', e);
-          collection(config.dbUrl)
-            .then((collectionUser) => {
-              collectionUser.insertOne(adminUser)
-                .then((resolve) => {
-                  console.log('Data Insertada:', resolve);
-                });
-            });
-        });
-    })
-    .catch((err) => console.log(err)); */
-
-  /* collection(config.dbUrl)
-    .then((collectionUser) => {
-      collectionUser.insertOne(adminUser)
-        .then((resolve) => {
-          console.log('Data Insertada:', resolve);
-        });
-    })
-    .catch((err) => console.log(err)); */
-
   next();
 };
 
@@ -145,7 +116,8 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.get('/users/:uid', requireAuth, (req, resp) => {
+  app.get('/users/', requireAuth, (req, resp) => {
+
   });
 
   /**
@@ -167,8 +139,7 @@ module.exports = (app, next) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {403} si ya existe usuaria con ese `email`
    */
-  app.post('/users', requireAdmin, (req, resp, next) => {
-  });
+  app.post('/users', requireAdmin, createUser);
 
   /**
    * @name PUT /users

@@ -27,26 +27,22 @@ module.exports = (app, nextMain) => {
     }
     // Valida el ingreso de email y password de cada usuario y genera token
     return collection()
-      .then((collectionUser) => {
-        return collectionUser.findOne({ email })
-          .then((doc) => {
-            if (doc === null) {
-              return next(400);
-            }
-
-            if (doc.email === email && bcrypt.compare(doc.password, password)) {
-              const payload = {
-                uid: doc._id,
-                iss: 'burger-queen-api',
-                exp: 60 * 60 * 24,
-              };
-              const token = jwt.sign(payload, secret);
-              console.log('token: ', token);
-              return resp.status(200).json(token);
-            }
-          });
-      });
-    // next();
+      .then((collectionUser) => collectionUser.findOne({ email })
+        .then((doc) => {
+          if (doc === null) {
+            return next(400);
+          }
+          if (doc.email === email && bcrypt.compare(doc.password, password)) {
+            const payload = {
+              uid: doc._id,
+              iss: 'burger-queen-api',
+              expiresIn: 60 * 60 * 24,
+            };
+            const token = jwt.sign(payload, secret);
+            console.log('token: ', token);
+            return resp.status(200).json({ token });
+          }
+        }));
   });
 
   return nextMain();

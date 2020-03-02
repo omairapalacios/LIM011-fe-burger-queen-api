@@ -3,26 +3,42 @@ const config = require('../config');
 
 module.exports = {
   getUsers: (req, resp, next) => {
+  //   console.log('get user req', req);
   },
 
   createUser: (req, resp, next) => {
-    console.log(req.body);
-    const { email, password, roles } = req.body;
+    // console.log('create user req', req);
+    const { email, password, roles = { admin: false } } = req.body;
     if (!email || !password) {
       return next(400);
+    } if (email.indexOf('@') === -1) {
+      return next(400);
+    } if (password.length <= 3) {
+      return next(400);
     }
-    // No utilizado
+
     return collection()
-      .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
-      .then((index) => {
-        console.log('indice creado', index);
-        return collection(config.dbUrl);
-      })
-      .then((collectionUser) => collectionUser.insertOne({ email, password, roles }))
+      .then((collectionUser) => collectionUser.findOne({ email }))
       .then((doc) => {
-        console.log('Usuario creado exitosamente', doc);
-        resp.status(200).json(doc);
+        if (doc === null) {
+          return collection()
+            .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
+            .then((index) => {
+              // console.log('indice creado', index);
+              return collection();
+            })
+            .then((collectionUser) => collectionUser.insertOne({ email, password, roles }))
+            .then((doc) => {
+              // console.log('Usuario creado exitosamente', doc);
+              resp.status(200).send({
+                _id: doc.ops[0]._id,
+                email: doc.ops[0].email,
+                roles: doc.ops[0].roles,
+              });
+            });
+        }
+        next(403);
       })
-      .catch((err) => console.log(err));
+      .catch(() => next(400));
   },
 };

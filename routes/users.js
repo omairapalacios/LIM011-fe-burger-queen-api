@@ -32,18 +32,14 @@ const initAdminUser = (app, next) => {
         .then((doc) => {
           if (doc === null) {
             collection(config.dbUrl)
-              .then((collectionUser) => {
-                collectionUser.createIndex({ email: 1 }, { unique: true })
-                  .then((index) => {
-                    console.log('indice creado', index);
-                    collection(config.dbUrl)
-                      .then((collectionUser) => {
-                        collectionUser.insertOne(adminUser)
-                          .then((doc) => {
-                            console.log('Usuario Admin fue creado exitosamente :', doc);
-                          });
-                      });
-                  });
+              .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
+              .then((index) => {
+                console.log('indice creado', index);
+                return collection(config.dbUrl);
+              })
+              .then((collectionUser) => collectionUser.insertOne(adminUser))
+              .then((doc) => {
+                console.log('Usuario creado exitosamente', doc);
               });
           }
           console.log('Usuario Admin fue encontrado:', doc);
@@ -51,7 +47,6 @@ const initAdminUser = (app, next) => {
         })
         .catch((err) => console.log(err));
     });
-
 
   /* collection(config.dbUrl)
     .then((collectionUser) => {

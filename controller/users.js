@@ -6,12 +6,13 @@ module.exports = {
   },
 
   createUser: (req, resp, next) => {
+    console.log(req.body);
     const { email, password, roles } = req.body;
     if (!email || !password) {
       return next(400);
     }
     // No utilizado
-    collection()
+    return collection()
       .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
       .then((index) => {
         console.log('indice creado', index);

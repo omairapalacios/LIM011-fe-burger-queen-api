@@ -26,18 +26,11 @@ module.exports = (secret) => (req, resp, next) => {
   });
 };
 
+module.exports.isAuthenticated = (req) => (req.headers.user) ? true : false
 
-module.exports.isAuthenticated = (req) => (
-  
-  // TODO: decidir por la informacion del request si la usuaria esta autenticada
-  false
-);
-
-
-module.exports.isAdmin = (req) => (
-  // TODO: decidir por la informacion del request si la usuaria es admin
-  false
-);
+module.exports.isAdmin = (req) => { 
+  return req.headers.user && req.headers.user.roles.admin
+}
 
 
 module.exports.requireAuth = (req, resp, next) => (

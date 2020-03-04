@@ -6,8 +6,7 @@ const collection = require('../conecction/collectionUser');
 
 module.exports = (secret) => (req, resp, next) => {
   const { authorization } = req.headers;
-  console.log(req.headers);
-  
+  // console.log(req.headers);
 
   if (!authorization) {
     return next();
@@ -17,9 +16,9 @@ module.exports = (secret) => (req, resp, next) => {
     return next();
   }
   jwt.verify(token, secret, (err, decodedToken) => {
-    console.log('decodeddddddddddddddd', decodedToken);
+    // console.log('decoded token', decodedToken);
     if (err) {
-      console.log('error', err);
+      // console.log('error', err);
       return next(403);
     }
     // TODO: Verificar identidad del usuario usando `decodeToken.uid`
@@ -57,7 +56,7 @@ module.exports.requireAuth = (req, resp, next) => (
 
 
 module.exports.requireAdmin = (req, resp, next) => {
- // console.log('aqui required');
+// console.log('aqui required');
   // eslint-disable-next-line no-nested-ternary
   (!module.exports.isAuthenticated(req))
     ? next(401)

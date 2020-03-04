@@ -31,17 +31,9 @@ const initAdminUser = (app, next) => {
           if (doc === null) {
             collection()
               .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
-              .then((index) => {
-                console.log('indice creado', index);
-                return collection();
-              })
-              .then((collectionUser) => collectionUser.insertOne(adminUser))
-              .then((doc) => {
-                console.log('Usuario creado exitosamente', doc);
-              });
+              .then(() => collection())
+              .then((collectionUser) => collectionUser.insertOne(adminUser));
           }
-          console.log('Usuario Admin fue encontrado:', doc);
-          return doc;
         })
         .catch((err) => console.log(err));
     });

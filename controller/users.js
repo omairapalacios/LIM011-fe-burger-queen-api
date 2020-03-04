@@ -110,5 +110,23 @@ module.exports = {
         });
     }
   },
-  // deleteUserUid: (req, resp, next) => {},
+  deleteUser: (req, resp, next) => {
+    const { uid } = req.params;
+    return collection()
+      .then((collectionUser) => collectionUser.findOne({ email: uid } || { _id: uid }))
+      .then((doc) => {
+        //  console.log(doc);
+        if (doc !== null) {
+          return collection()
+            .then((collectionUser) => collectionUser.remove({ _id: doc._id }))
+            .then((doc) => {
+              console.log('Usuario eliminado exitosamente', doc);
+              resp.status(200).send(doc);
+            });
+        }
+        next(404);
+      })
+      .catch(() => next(404));
+  },
+
 };

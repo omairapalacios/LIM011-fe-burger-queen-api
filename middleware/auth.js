@@ -1,13 +1,13 @@
 /* eslint-disable max-len */
 /* eslint-disable no-unused-expressions */
-const jwt = require('jsonwebtoken');
 const { ObjectID } = require('mongodb');
+const jwt = require('jsonwebtoken');
+
 const collection = require('../conecction/collectionUser');
 
 module.exports = (secret) => (req, resp, next) => {
   const { authorization } = req.headers;
   // console.log(req.headers);
-
 
   if (!authorization) {
     return next();
@@ -17,7 +17,7 @@ module.exports = (secret) => (req, resp, next) => {
     return next();
   }
   jwt.verify(token, secret, (err, decodedToken) => {
-    // console.log('Decoded: ', decodedToken);
+    // console.log('decoded token', decodedToken);
     if (err) {
       // console.log('error', err);
       return next(403);
@@ -54,6 +54,17 @@ module.exports.isAdmin = (req) => {
 };
 
 // Middleware, porque me responde con un next()
+module.exports.isUser = (req) => (
+  req.headers.user._id.toString() === req.params.uid
+  || req.headers.user.email === req.params.uid
+);
+
+module.exports.requireAdminOrUser = (req, resp, next) => (
+  module.exports.isAdmin(req) || module.exports.isUser(req)
+    ? next()
+    : next(403)
+);
+
 module.exports.requireAuth = (req, resp, next) => (
   (!module.exports.isAuthenticated(req))
     ? next(401)

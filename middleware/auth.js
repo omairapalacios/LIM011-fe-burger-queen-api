@@ -54,7 +54,7 @@ module.exports.isUser = (req) => (
 );
 
 module.exports.requireAdminOrUser = (req, resp, next) => (
-  module.exports.isAdmin(req) || module.exports.isAdmin(req)
+  module.exports.isAdmin(req) || module.exports.isUser(req)
     ? next()
     : next(403)
 );

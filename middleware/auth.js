@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable no-unused-expressions */
 const jwt = require('jsonwebtoken');
-const { ObjectID } = require('mongodb');
+
 const collection = require('../conecction/collectionUser');
 
 module.exports = (secret) => (req, resp, next) => {

@@ -4,11 +4,13 @@ const collection = require('../conecction/collectionUser');
 const {
   requireAuth,
   requireAdmin,
+  requireAdminOrUser,
 } = require('../middleware/auth');
 
 const {
   getUsers,
   createUser,
+  deleteUser,
 } = require('../controller/users');
 
 // Valida el ingreso de email y password de las variables globales
@@ -174,8 +176,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.delete('/users/:uid', requireAuth, (req, resp, next) => {
-  });
+  app.delete('/users/:uid', requireAuth,requireAdminOrUser, deleteUser);
 
   initAdminUser(app, next);
 };

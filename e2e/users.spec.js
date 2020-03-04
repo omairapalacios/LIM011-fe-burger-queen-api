@@ -208,7 +208,7 @@ describe('POST /users', () => {
 });
 
 
-describe('PUT /users/:uid', () => {
+/* describe('PUT /users/:uid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/users/foo@bar.baz', { method: 'PUT' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -270,7 +270,7 @@ describe('PUT /users/:uid', () => {
       })
       .then((json) => expect(json).toHaveProperty('token'))
   ));
-});
+}); */
 
 
 describe('DELETE /users/:uid', () => {

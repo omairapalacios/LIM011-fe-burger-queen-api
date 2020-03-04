@@ -59,11 +59,11 @@ module.exports.isUser = (req) => (
   || req.headers.user.email === req.params.uid
 );
 
-module.exports.requireAdminOrUser = (req, resp, next) => (
+/* module.exports.requireAdminOrUser = (req, resp, next) => (
   module.exports.isAdmin(req) || module.exports.isUser(req)
     ? next()
     : next(403)
-);
+); */
 
 module.exports.requireAuth = (req, resp, next) => (
   (!module.exports.isAuthenticated(req))

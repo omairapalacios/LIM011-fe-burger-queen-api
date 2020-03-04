@@ -93,39 +93,39 @@ const {
 // });
 
 
-// describe('GET /users/:uid', () => {
-//   it('should fail with 401 when no auth', () => (
-//     fetch('/users/foo@bar.baz').then((resp) => expect(resp.status).toBe(401))
-//   ));
+describe('GET /users/:uid', () => {
+  it('should fail with 401 when no auth', () => (
+    fetch('/users/foo@bar.baz').then((resp) => expect(resp.status).toBe(401))
+  ));
 
-//   it('should fail with 403 when not owner nor admin', () => (
-//     fetchAsTestUser(`/users/${config.adminEmail}`)
-//       .then((resp) => expect(resp.status).toBe(403))
-//   ));
+  it('should fail with 403 when not owner nor admin', () => (
+    fetchAsTestUser(`/users/${config.adminEmail}`)
+      .then((resp) => expect(resp.status).toBe(403))
+  ));
 
-//   it('should fail with 404 when admin and not found', () => (
-//     fetchAsAdmin('/users/abc@def.ghi')
-//       .then((resp) => expect(resp.status).toBe(404))
-//   ));
+  it('should fail with 404 when admin and not found', () => (
+    fetchAsAdmin('/users/abc@def.ghi')
+      .then((resp) => expect(resp.status).toBe(404))
+  ));
 
-//   it('should get own user', () => (
-//     fetchAsTestUser('/users/test@test.test')
-//       .then((resp) => {
-//         expect(resp.status).toBe(200);
-//         return resp.json();
-//       })
-//       .then((json) => expect(json.email).toBe('test@test.test'))
-//   ));
+  it('should get own user', () => (
+    fetchAsTestUser('/users/test@test.test')
+      .then((resp) => {
+        expect(resp.status).toBe(200);
+        return resp.json();
+      })
+      .then((json) => expect(json.email).toBe('test@test.test'))
+  ));
 
-//   it('should get other user as admin', () => (
-//     fetchAsAdmin('/users/test@test.test')
-//       .then((resp) => {
-//         expect(resp.status).toBe(200);
-//         return resp.json();
-//       })
-//       .then((json) => expect(json.email).toBe('test@test.test'))
-//   ));
-// });
+  it('should get other user as admin', () => (
+    fetchAsAdmin('/users/test@test.test')
+      .then((resp) => {
+        expect(resp.status).toBe(200);
+        return resp.json();
+      })
+      .then((json) => expect(json.email).toBe('test@test.test'))
+  ));
+});
 
 
 describe('POST /users', () => {
@@ -208,7 +208,7 @@ describe('POST /users', () => {
 });
 
 
-describe('PUT /users/:uid', () => {
+/* describe('PUT /users/:uid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/users/foo@bar.baz', { method: 'PUT' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -270,7 +270,7 @@ describe('PUT /users/:uid', () => {
       })
       .then((json) => expect(json).toHaveProperty('token'))
   ));
-});
+}); */
 
 
 describe('DELETE /users/:uid', () => {

@@ -48,6 +48,17 @@ module.exports.isAdmin = (req) => {
   return false;
 };
 
+module.exports.isUser = (req) => (
+  req.headers.user._id.toString() === req.params.uid
+  || req.headers.user.email === req.params.uid
+);
+
+module.exports.requireAdminOrUser = (req, resp, next) => (
+  module.exports.isAdmin(req) || module.exports.isAdmin(req)
+    ? next()
+    : next(403)
+);
+
 module.exports.requireAuth = (req, resp, next) => (
   (!module.exports.isAuthenticated(req))
     ? next(401)

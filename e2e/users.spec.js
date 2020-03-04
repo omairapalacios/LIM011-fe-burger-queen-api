@@ -18,7 +18,7 @@ const parseLinkHeader = (str) => str.split(',')
   }, {});
 
 
-describe('GET /users', () => {
+/* describe('GET /users', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/users').then((resp) => expect(resp.status).toBe(401))
   ));
@@ -90,7 +90,7 @@ describe('GET /users', () => {
         expect(json[0]).toHaveProperty('email');
       })
   ));
-});
+}); */
 
 
 describe('GET /users/:uid', () => {
@@ -273,7 +273,7 @@ describe('PUT /users/:uid', () => {
 });
 
 
-describe('DELETE /users/:uid', () => {
+/* describe('DELETE /users/:uid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/users/foo@bar.baz', { method: 'DELETE' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -316,3 +316,4 @@ describe('DELETE /users/:uid', () => {
       .then((resp) => expect(resp.status).toBe(404));
   });
 });
+ */

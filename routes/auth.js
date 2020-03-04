@@ -39,7 +39,7 @@ module.exports = (app, nextMain) => {
               expiresIn: 60 * 60 * 24,
             };
             const token = jwt.sign(payload, secret);
-            console.log('token: ', token);
+            // console.log('token: ', token);
             return resp.status(200).json({ token });
           }
         }));

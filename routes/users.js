@@ -4,11 +4,14 @@ const collection = require('../conecction/collectionUser');
 const {
   requireAuth,
   requireAdmin,
+  requireAdminOrUser,
 } = require('../middleware/auth');
 
 const {
   getUsers,
+  getUserUid,
   createUser,
+  updateUserUid,
 } = require('../controller/users');
 
 // Valida el ingreso de email y password de las variables globales
@@ -24,28 +27,19 @@ const initAdminUser = (app, next) => {
     roles: { admin: true },
   };
   // TODO: crear usuario admin
-  collection()
-    .then((collectionUser) => {
-      collectionUser.findOne({ email: adminEmail })
-        .then((doc) => {
-          if (doc === null) {
-            collection()
-              .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
-              .then((index) => {
-                console.log('indice creado', index);
-                return collection();
-              })
-              .then((collectionUser) => collectionUser.insertOne(adminUser))
-              .then((doc) => {
-                console.log('Usuario creado exitosamente', doc);
-              });
-          }
-          console.log('Usuario Admin fue encontrado:', doc);
-          return doc;
-        })
-        .catch((err) => console.log(err));
-    });
-  next();
+  return collection()
+    .then((collectionUser) => collectionUser.findOne({ email: adminEmail }))
+    .then((doc) => {
+      if (doc === null) {
+        return collection()
+          .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
+          .then(() => collection())
+          .then((collectionUser) => collectionUser.insertOne(adminUser))
+          .then(() => next());
+      }
+      next(403);
+    }).catch(() => next(500));
+/*   next(); */
 };
 
 
@@ -116,9 +110,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.get('/users/', requireAuth, (req, resp) => {
-
-  });
+  app.get('/users/:uid', requireAdminOrUser, getUserUid);
 
   /**
    * @name POST /users
@@ -163,8 +155,7 @@ module.exports = (app, next) => {
    * @code {403} una usuaria no admin intenta de modificar sus `roles`
    * @code {404} si la usuaria solicitada no existe
    */
-  app.put('/users/:uid', requireAuth, (req, resp, next) => {
-  });
+  app.put('/users/:uid', requireAdminOrUser, updateUserUid);
 
   /**
    * @name DELETE /users

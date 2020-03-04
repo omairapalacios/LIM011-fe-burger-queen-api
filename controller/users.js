@@ -1,4 +1,3 @@
-const { ObjectID } = require('mongodb');
 const collection = require('../conecction/collectionUser');
 
 module.exports = {
@@ -38,7 +37,6 @@ module.exports = {
       })
       .catch(() => next(400));
   },
-
   deleteUser: (req, resp, next) => {
     const { uid } = req.params;
     return collection()

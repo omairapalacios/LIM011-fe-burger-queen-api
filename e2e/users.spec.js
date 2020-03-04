@@ -208,69 +208,69 @@ describe('POST /users', () => {
 });
 
 
-// describe('PUT /users/:uid', () => {
-//   it('should fail with 401 when no auth', () => (
-//     fetch('/users/foo@bar.baz', { method: 'PUT' })
-//       .then((resp) => expect(resp.status).toBe(401))
-//   ));
+describe('PUT /users/:uid', () => {
+  it('should fail with 401 when no auth', () => (
+    fetch('/users/foo@bar.baz', { method: 'PUT' })
+      .then((resp) => expect(resp.status).toBe(401))
+  ));
 
-//   it('should fail with 403 when not owner nor admin', () => (
-//     fetchAsTestUser(`/users/${config.adminEmail}`, { method: 'PUT' })
-//       .then((resp) => expect(resp.status).toBe(403))
-//   ));
+  it('should fail with 403 when not owner nor admin', () => (
+    fetchAsTestUser(`/users/${config.adminEmail}`, { method: 'PUT' })
+      .then((resp) => expect(resp.status).toBe(403))
+  ));
 
-//   it('should fail with 404 when admin and not found', () => (
-//     fetchAsAdmin('/users/abc@def.gih', { method: 'PUT' })
-//       .then((resp) => expect(resp.status).toBe(404))
-//   ));
+  it('should fail with 404 when admin and not found', () => (
+    fetchAsAdmin('/users/abc@def.gih', { method: 'PUT' })
+      .then((resp) => expect(resp.status).toBe(404))
+  ));
 
-//   it('should fail with 400 when no props to update', () => (
-//     fetchAsTestUser('/users/test@test.test', { method: 'PUT' })
-//       .then((resp) => expect(resp.status).toBe(400))
-//   ));
+  it('should fail with 400 when no props to update', () => (
+    fetchAsTestUser('/users/test@test.test', { method: 'PUT' })
+      .then((resp) => expect(resp.status).toBe(400))
+  ));
 
-//   it('should fail with 403 when not admin tries to change own roles', () => (
-//     fetchAsTestUser('/users/test@test.test', {
-//       method: 'PUT',
-//       body: { roles: { admin: true } },
-//     })
-//       .then((resp) => expect(resp.status).toBe(403))
-//   ));
+  it('should fail with 403 when not admin tries to change own roles', () => (
+    fetchAsTestUser('/users/test@test.test', {
+      method: 'PUT',
+      body: { roles: { admin: true } },
+    })
+      .then((resp) => expect(resp.status).toBe(403))
+  ));
 
-//   it('should update user when own data (password change)', () => (
-//     fetchAsTestUser('/users/test@test.test', {
-//       method: 'PUT',
-//       body: { password: 'garmadon' },
-//     })
-//       .then((resp) => expect(resp.status).toBe(200))
-//       .then(() => fetch('/auth', {
-//         method: 'POST',
-//         body: { email: 'test@test.test', password: 'garmadon' },
-//       }))
-//       .then((resp) => {
-//         expect(resp.status).toBe(200);
-//         return resp.json();
-//       })
-//       .then((json) => expect(json).toHaveProperty('token'))
-//   ));
+  it('should update user when own data (password change)', () => (
+    fetchAsTestUser('/users/test@test.test', {
+      method: 'PUT',
+      body: { password: 'garmadon' },
+    })
+      .then((resp) => expect(resp.status).toBe(200))
+      .then(() => fetch('/auth', {
+        method: 'POST',
+        body: { email: 'test@test.test', password: 'garmadon' },
+      }))
+      .then((resp) => {
+        expect(resp.status).toBe(200);
+        return resp.json();
+      })
+      .then((json) => expect(json).toHaveProperty('token'))
+  ));
 
-//   it('should update user when admin', () => (
-//     fetchAsAdmin('/users/test@test.test', {
-//       method: 'PUT',
-//       body: { password: 'ohmygod' },
-//     })
-//       .then((resp) => expect(resp.status).toBe(200))
-//       .then(() => fetch('/auth', {
-//         method: 'POST',
-//         body: { email: 'test@test.test', password: 'ohmygod' },
-//       }))
-//       .then((resp) => {
-//         expect(resp.status).toBe(200);
-//         return resp.json();
-//       })
-//       .then((json) => expect(json).toHaveProperty('token'))
-//   ));
-// });
+  it('should update user when admin', () => (
+    fetchAsAdmin('/users/test@test.test', {
+      method: 'PUT',
+      body: { password: 'ohmygod' },
+    })
+      .then((resp) => expect(resp.status).toBe(200))
+      .then(() => fetch('/auth', {
+        method: 'POST',
+        body: { email: 'test@test.test', password: 'ohmygod' },
+      }))
+      .then((resp) => {
+        expect(resp.status).toBe(200);
+        return resp.json();
+      })
+      .then((json) => expect(json).toHaveProperty('token'))
+  ));
+});
 
 
 describe('DELETE /users/:uid', () => {

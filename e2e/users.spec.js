@@ -208,7 +208,7 @@ describe('POST /users', () => {
 });
 
 
-/* describe('PUT /users/:uid', () => {
+describe('PUT /users/:uid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/users/foo@bar.baz', { method: 'PUT' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -219,9 +219,12 @@ describe('POST /users', () => {
       .then((resp) => expect(resp.status).toBe(403))
   ));
 
-  it('should fail with 404 when admin and not found', () => (
+  it('should fail with 404 when admin and not found', (done) => (
     fetchAsAdmin('/users/abc@def.gih', { method: 'PUT' })
-      .then((resp) => expect(resp.status).toBe(404))
+      .then((resp) => {
+        expect(resp.status).toBe(404)
+        done();
+      })
   ));
 
   it('should fail with 400 when no props to update', () => (
@@ -270,10 +273,10 @@ describe('POST /users', () => {
       })
       .then((json) => expect(json).toHaveProperty('token'))
   ));
-}); */
+});
 
 
-describe('DELETE /users/:uid', () => {
+/* describe('DELETE /users/:uid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/users/foo@bar.baz', { method: 'DELETE' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -316,3 +319,4 @@ describe('DELETE /users/:uid', () => {
       .then((resp) => expect(resp.status).toBe(404));
   });
 });
+ */

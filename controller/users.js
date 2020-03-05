@@ -76,39 +76,55 @@ module.exports = {
   updateUserUid: (req, resp, next) => {
     // console.log('que trae body:', req.body.roles.admin);
 
-    // Datos User actual.
+    // Datos User actual del URL.
     const condition = getIdOrEmail(req.params.uid);
+    // console.log('condition', condition);
 
     // Datos ingresado por consola.
     // const { email, password, roles = { admin: false } } = req.body;
-    const { email, password, roles } = req.body;
+    // const { email, password, roles } = req.body;
 
     // Datos seteados.
-    const newValues = { $set: { email, password, roles } };
+    // const newValues = { $set: { email, password, roles } };
 
-    // Usuario no puede cambiarse a Administrador.
+    // Si no se proveen `email` o `password` o ninguno de los dos. (400)
+
     if (!isAdmin(req) && req.body.roles.admin === true) {
       next(403);
-    } else {
-      return collection()
-        .then((collectionUser) => collectionUser.findOne(condition))
-        .then((user) => {
-          // console.log('user.........', user);
-          if (!user) {
-            next(404); // if (!isAdmin(req) && roles) next(403);
-          } else if (!email && !password) {
-            next(400);
-          } else {
-            return collection()
-              .then((collectionUser) => collectionUser.updateOne(condition, newValues))
-              .then((doc) => {
-                // console.log('updateOne: ', doc);
-                resp.status(200);
-              }).catch(() => next(404));
-          }
-          // next(404);
-        });
     }
+
+    // una usuaria no admin intenta de modificar sus `roles` (403)
+    /* if (!isAdmin(req) && req.body.roles.admin === true) {
+      next(403);
+    } */
+    collection()
+      .then((collectionUser) => collectionUser.findOne(condition))
+      .then((user) => {
+        console.log(condition);
+        console.log('user.........', user);
+        if (!req.body.email && !req.body.password) {
+          console.log('400 ... ', req.body);
+          next(400);
+        }
+        if (!user) {
+          next(404);
+        } else {
+          return collection()
+            .then((collectionUser) => collectionUser.updateOne(condition,
+              {
+                $set: {
+                  email: req.body.email || user.email,
+                  password: req.body.password || user.password,
+                  roles: { admin: false },
+                },
+              }))
+            .then((doc) => {
+              // console.log('updateOne: ', doc);
+              resp.status(200).json(doc);
+            }).catch(() => next(404));
+        }
+        // next(404);
+      });
   },
   deleteUser: (req, resp, next) => {
     const { uid } = req.params;

@@ -59,11 +59,14 @@ module.exports.isUser = (req) => (
   || req.headers.user.email === req.params.uid
 );
 
-/* module.exports.requireAdminOrUser = (req, resp, next) => (
-  module.exports.isAdmin(req) || module.exports.isUser(req)
-    ? next()
-    : next(403)
-); */
+module.exports.requireAdminOrUser = (req, resp, next) => (
+  // eslint-disable-next-line no-nested-ternary
+  (!module.exports.isAuthenticated(req))
+    ? next(401)
+    : module.exports.isAdmin(req) || module.exports.isUser(req)
+      ? next()
+      : next(403)
+);
 
 module.exports.requireAuth = (req, resp, next) => (
   (!module.exports.isAuthenticated(req))
@@ -82,7 +85,7 @@ module.exports.requireAdmin = (req, resp, next) => {
       : next();
 };
 
-module.exports.requireAdminOrUser = (req, resp, next) => {
+/* module.exports.requireAdminOrUser = (req, resp, next) => {
   // eslint-disable-next-line no-nested-ternary
   (!module.exports.isAuthenticated(req))
     ? next(401)
@@ -90,3 +93,4 @@ module.exports.requireAdminOrUser = (req, resp, next) => {
       ? next(403)
       : next();
 };
+ */

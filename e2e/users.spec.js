@@ -219,11 +219,10 @@ describe('PUT /users/:uid', () => {
       .then((resp) => expect(resp.status).toBe(403))
   ));
 
-  it('should fail with 404 when admin and not found', (done) => (
+  it('should fail with 404 when admin and not found', () => (
     fetchAsAdmin('/users/abc@def.gih', { method: 'PUT' })
       .then((resp) => {
-        expect(resp.status).toBe(404)
-        done();
+        expect(resp.status).toBe(404);
       })
   ));
 
@@ -276,7 +275,7 @@ describe('PUT /users/:uid', () => {
 });
 
 
-/* describe('DELETE /users/:uid', () => {
+describe('DELETE /users/:uid', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/users/foo@bar.baz', { method: 'DELETE' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -319,4 +318,3 @@ describe('PUT /users/:uid', () => {
       .then((resp) => expect(resp.status).toBe(404));
   });
 });
- */

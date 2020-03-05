@@ -54,10 +54,13 @@ module.exports.isAdmin = (req) => {
 };
 
 // Middleware, porque me responde con un next()
-module.exports.isUser = (req) => (
-  req.headers.user._id.toString() === req.params.uid
-  || req.headers.user.email === req.params.uid
-);
+module.exports.isUser = (req) => {
+  if (req.headers.user._id.toString() === req.params.uid
+  || req.headers.user.email === req.params.uid) {
+    return true;
+  }
+  return false;
+};
 
 module.exports.requireAdminOrUser = (req, resp, next) => (
   // eslint-disable-next-line no-nested-ternary
@@ -92,5 +95,4 @@ module.exports.requireAdmin = (req, resp, next) => {
     : (!module.exports.isAdmin(req) && !(req.headers.user._id.toString() === req.params.uid || req.headers.user.email === req.params.uid))
       ? next(403)
       : next();
-};
- */
+}; */

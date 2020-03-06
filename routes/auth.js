@@ -32,7 +32,7 @@ module.exports = (app, nextMain) => {
           if (doc === null) {
             return next(400);
           }
-          if (doc.email === email && bcrypt.compare(doc.password, password)) {
+          if (doc.email === email && bcrypt.compareSync(password, doc.password)) {
             const payload = {
               uid: doc._id,
               iss: 'burger-queen-api',
@@ -44,6 +44,5 @@ module.exports = (app, nextMain) => {
           }
         }));
   });
-
   return nextMain();
 };

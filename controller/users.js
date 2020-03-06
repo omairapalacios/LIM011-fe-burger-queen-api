@@ -1,135 +1,159 @@
-const { getIdOrEmail, passwordBcrypt } = require('../utils/utils');
+const bcrypt = require('bcrypt');
+const { getIdOrEmail } = require('../utils/utils');
 const collection = require('../conecction/collectionUser');
-const { isAdmin, isAuthenticated } = require('../middleware/auth');
-
-
-/* console.log('Obtener Email o ID:', uidOrEmail('5e5e7cc847807540c6529f1b'));
-console.log('Obtener Email o ID:', uidOrEmail('test@test.test')); */
 
 module.exports = {
   getUsers: (req, resp, next) => {
-    collection()
+    // console.log('Soy req.query:  ', req);
+    console.log('Soy req.query:  ', req.query.page);
+    console.log('Soy req.query:  ', req.protocol);
+    console.log('Soy req.query:  ', req.path);
+
+    // Limite de documentos.
+    const limit = parseInt(req.query.limit, 10) || 10;
+    // Numero de paginas.
+    const page = parseInt(req.query.page, 10) || 1;
+    // Calcular saltos.
+    return collection()
+      .then((collectionUser) => collectionUser.count())
+      .then((count) => {
+        console.log('count...', count);
+        const numbersPages = Math.ceil(count / limit);
+        console.log('numbersPages...', numbersPages);
+        const skip = (numbersPages === 0) ? 1 : (numbersPages - 1) * limit;
+        console.log('skip...', skip);
+        // Compaginaciòn.
+        return collection()
+          .then((collectionUser) => collectionUser.find().skip(skip).limit(limit).toArray())
+          .then((users) => {
+            console.log('users...', users);
+            const firstPage = `</users?limit=${limit}&page=${1}>; rel="first"`;
+            console.log('first:', firstPage);
+            const prevPage = `</users?limit=${limit}&page=${page - 1}>; rel="prev"`;
+            const nextPage = `</users?limit=${limit}&page=${page + 1}>; rel="next"`;
+            const lastPage = `</users?limit=${limit}&page=${numbersPages}>; rel="last"`;
+            resp.setHeader('link', `${firstPage}, ${prevPage}, ${nextPage}, ${lastPage}`);
+            resp.send(users);
+          });
+      });
+  },
+
+  /**
+   * getUsers: (req, resp, next) => {
+    // console.log('Soy req.query:  ', req);
+    console.log('Soy req.query:  ', req.query.page);
+    console.log('Soy req.query:  ', req.protocol);
+    console.log('Soy req.query:  ', req.path);
+    return collection()
       .then((collectionUser) => {
         collectionUser.find().toArray((err, users) => {
           if (err) throw err;
           // console.log('RESULT...!!!', users);
-          /* resp.send({
+          resp.send({
             _id: users.ops[0]._id,
             email: users.ops[0].email,
             roles: users.ops[0].roles,
-          }); */
+          });
         });
       });
   },
+   */
 
   createUser: (req, resp, next) => { // NOTA: Consultar si tambien se crearàn user admin.
-    // console.log('create user req', req);
-    const { email, password, roles = { admin: false } } = req.body;
-    if (!email || !password) {
+    if (!req.body.email || !req.body.password) {
       return next(400);
-    } if (email.indexOf('@') === -1) {
+    } if (req.body.email.indexOf('@') === -1) {
       return next(400);
-    } if (password.length <= 3) {
+    } if (req.body.password.length <= 3) {
       return next(400);
     }
+    const { email, roles = { admin: false } } = req.body;
+    let { password } = req.body;
+    password = bcrypt.hashSync(password, 10);
 
     return collection()
       .then((collectionUser) => collectionUser.findOne({ email }))
-      .then((doc) => {
-        if (doc === null) {
+      .then((user) => {
+        if (user === null) {
           return collection()
             .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
             .then(() => collection())
             .then((collectionUser) => collectionUser.insertOne({ email, password, roles }))
-            .then((doc) => {
-              // console.log('Usuario creado exitosamente', doc);
+            .then((newUser) => {
               resp.status(200).send({
-                _id: doc.ops[0]._id,
-                email: doc.ops[0].email,
-                roles: doc.ops[0].roles,
+                _id: newUser.ops[0]._id,
+                email: newUser.ops[0].email,
+                roles: newUser.ops[0].roles,
               });
             });
         }
-        next(403);
+        return next(403);
       })
       .catch(() => next(400));
   },
   getUserUid: (req, resp, next) => {
-    // const UserEmail = req.params.uid;
     const condition = getIdOrEmail(req.params.uid);
-    // console.log('req.params.uid', UserEmail);
+
     return collection()
       .then((collectionUser) => collectionUser.findOne(condition))
-      .then((doc) => {
-        if (doc !== null) {
-          // console.log('Prueba...', doc);
+      .then((user) => {
+        if (user !== null) {
           resp.status(200).send({
-            _id: doc._id,
-            email: doc.email,
-            roles: doc.roles,
+            _id: user._id,
+            email: user.email,
+            roles: user.roles,
           });
         }
-        next(404);
-      });
+        return next(404);
+      })
+      .catch(() => next(400));
   },
   updateUserUid: (req, resp, next) => {
-    // User actual de la URL.
-    // console.log('UpdateUserUid', req.params.uid);
     const condition = getIdOrEmail(req.params.uid);
-    /* console.log('UpdateUserUid despues: ', condition);
-    // Datos ingresados.
-    console.log('req.body - Sin nada: ', req.body);
     const { email, password, roles } = req.body;
-    console.log('req.body.email: ', email); // * Preguntar DUDA.
-    console.log('req.body.password: ', password); // * Puede cambiar
-    console.log('req.body.roles: ', roles); // * NO puede camiarse a Admin. */
 
-    collection()
+    return collection()
       .then((collectionUser) => collectionUser.findOne(condition))
-      .then((doc) => {
-        if (doc === null) next(404);
-        if (!isAdmin(req) && req.body.roles) next(403);
-        if (!req.body.email && !req.body.password) next(400);
-        // Actualizar.
-        collection()
-          .then((collectionUser) => collectionUser.updateOne(condition, {
-            $set: {
-              email: req.body.email || doc.email,
-              // password: passwordBcrypt(req.body.password),
-              password: req.body.password || doc.password,
-              // password: (!req.body.password) ? doc.password : passwordBcrypt(req.body.password),
-              roles: req.body.roles || doc.roles,
-            },
-          }))
-          .then((doc) => {
-            // console.log('Datos Actualizados', doc);
-            // resp.status(200).send({ message: 'Usuario actualizado exitosamente' });
-            // Si jalamos doc, tiene que ser sin el password.
-            resp.status(200).send({
-              _id: doc.email,
-              email: doc.email,
-              roles: doc.roles, // No se si se pone .admin (Para ver si es o no admin).
-            });
-          });
+      .then((user) => {
+        if (!user) {
+          return next(404);
+        }
+        if (!req.headers.user.roles.admin && req.body.roles) {
+          return next(403);
+        }
+        if (!req.body.email && !req.body.password) {
+          return next(400);
+        }
+
+        return collection()
+          .then((collectionUser) => collectionUser.updateOne(condition,
+            {
+              $set: {
+                email: email || user.email,
+                password: password ? bcrypt.hashSync(password, 10) : user.password,
+                roles: roles || user.roles,
+              },
+            }))
+          .then(() => {
+            resp.status(200).send({ message: 'usuario actualizado exitosamente' });
+          }).catch(() => next(404));
       });
   },
 
   deleteUser: (req, resp, next) => {
     const condition = getIdOrEmail(req.params.uid);
-    // console.log('Es condition: ', condition);
-    /* if (!isAdmin(req) && !(req.headers.user._id.toString() === req.params.uid
-      || req.headers.user.email === req.params.uid)) {
-      next(403);
-    } */
-    collection()
+    return collection()
       .then((collectionUser) => collectionUser.findOne(condition))
-      .then((doc) => {
-        if (doc === null) next(404);
-        collection()
-          .then((collectionUser) => collectionUser.deleteOne({ _id: doc._id }))
+      .then((user) => {
+        if (!user) {
+          return next(404);
+        }
+        return collection()
+          .then((collectionUser) => collectionUser.deleteOne(condition))
           .then(() => {
-            resp.send({ message: 'Usuario eliminado exitosamente' });
+            resp.status(200).send({ message: 'usuario eliminado exitosamente' });
           });
-      });
+      })
+      .catch(() => next(404));
   },
 };

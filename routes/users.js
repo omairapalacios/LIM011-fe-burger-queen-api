@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const collection = require('../conecction/collectionUser');
 
 const {
-  requireAuth,
   requireAdmin,
   requireAdminOrUser,
 } = require('../middleware/auth');
@@ -40,7 +39,6 @@ const initAdminUser = (app, next) => {
       }
       next(403);
     }).catch(() => next(500));
-/*   next(); */
 };
 
 

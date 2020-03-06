@@ -11,86 +11,86 @@ const {
 } = process;
 
 
-// const parseLinkHeader = (str) => str.split(',')
-//   .reduce((memo, item) => {
-//     const [, value, key] = /^<(.*)>;\s+rel="(first|last|prev|next)"/.exec(item.trim());
-//     return { ...memo, [key]: value };
-//   }, {});
+const parseLinkHeader = (str) => str.split(',')
+  .reduce((memo, item) => {
+    const [, value, key] = /^<(.*)>;\s+rel="(first|last|prev|next)"/.exec(item.trim());
+    return { ...memo, [key]: value };
+  }, {});
 
 
-// describe('GET /users', () => {
-//   it('should fail with 401 when no auth', () => (
-//     fetch('/users').then((resp) => expect(resp.status).toBe(401))
-//   ));
+describe('GET /users', () => {
+  it('should fail with 401 when no auth', () => (
+    fetch('/users').then((resp) => expect(resp.status).toBe(401))
+  ));
 
-//   it('should fail with 403 when not admin', () => (
-//     fetchAsTestUser('/users')
-//       .then((resp) => expect(resp.status).toBe(403))
-//   ));
+  it('should fail with 403 when not admin', () => (
+    fetchAsTestUser('/users')
+      .then((resp) => expect(resp.status).toBe(403))
+  ));
 
-//   it('should get users', () => (
-//     fetchAsAdmin('/users')
-//       .then((resp) => {
-//         expect(resp.status).toBe(200);
-//         return resp.json();
-//       })
-//       .then((json) => {
-//         expect(Array.isArray(json)).toBe(true);
-//         expect(json.length > 0).toBe(true);
-//         // TODO: Check that the results are actually the "expected" user objects
-//       })
-//   ));
+  it('should get users', () => (
+    fetchAsAdmin('/users')
+      .then((resp) => {
+        expect(resp.status).toBe(200);
+        return resp.json();
+      })
+      .then((json) => {
+        expect(Array.isArray(json)).toBe(true);
+        expect(json.length > 0).toBe(true);
+        // TODO: Check that the results are actually the "expected" user objects
+      })
+  ));
 
-//   it('should get users with pagination', () => (
-//     fetchAsAdmin('/users?limit=1')
-//       .then((resp) => {
-//         expect(resp.status).toBe(200);
-//         return resp.json().then((json) => ({ headers: resp.headers, json }));
-//       })
-//       .then(({ headers, json }) => {
-//         const linkHeader = parseLinkHeader(headers.get('link'));
+  it('should get users with pagination', () => (
+    fetchAsAdmin('/users?limit=1')
+      .then((resp) => {
+        expect(resp.status).toBe(200);
+        return resp.json().then((json) => ({ headers: resp.headers, json }));
+      })
+      .then(({ headers, json }) => {
+        const linkHeader = parseLinkHeader(headers.get('link'));
 
-//         const nextUrlObj = url.parse(linkHeader.next);
-//         const lastUrlObj = url.parse(linkHeader.last);
-//         const nextQuery = qs.parse(nextUrlObj.query);
-//         const lastQuery = qs.parse(lastUrlObj.query);
+        const nextUrlObj = url.parse(linkHeader.next);
+        const lastUrlObj = url.parse(linkHeader.last);
+        const nextQuery = qs.parse(nextUrlObj.query);
+        const lastQuery = qs.parse(lastUrlObj.query);
 
-//         expect(nextQuery.limit).toBe('1');
-//         expect(nextQuery.page).toBe('2');
-//         expect(lastQuery.limit).toBe('1');
-//         expect(lastQuery.page >= 2).toBe(true);
+        expect(nextQuery.limit).toBe('1');
+        expect(nextQuery.page).toBe('2');
+        expect(lastQuery.limit).toBe('1');
+        expect(lastQuery.page >= 2).toBe(true);
 
-//         expect(Array.isArray(json)).toBe(true);
-//         expect(json.length).toBe(1);
-//         expect(json[0]).toHaveProperty('_id');
-//         expect(json[0]).toHaveProperty('email');
-//         return fetchAsAdmin(nextUrlObj.path);
-//       })
-//       .then((resp) => {
-//         expect(resp.status).toBe(200);
-//         return resp.json().then((json) => ({ headers: resp.headers, json }));
-//       })
-//       .then(({ headers, json }) => {
-//         const linkHeader = parseLinkHeader(headers.get('link'));
+        expect(Array.isArray(json)).toBe(true);
+        expect(json.length).toBe(1);
+        expect(json[0]).toHaveProperty('_id');
+        expect(json[0]).toHaveProperty('email');
+        return fetchAsAdmin(nextUrlObj.path);
+      })
+      .then((resp) => {
+        expect(resp.status).toBe(200);
+        return resp.json().then((json) => ({ headers: resp.headers, json }));
+      })
+      .then(({ headers, json }) => {
+        const linkHeader = parseLinkHeader(headers.get('link'));
 
-//         const firstUrlObj = url.parse(linkHeader.first);
-//         const prevUrlObj = url.parse(linkHeader.prev);
+        const firstUrlObj = url.parse(linkHeader.first);
+        const prevUrlObj = url.parse(linkHeader.prev);
 
-//         const firstQuery = qs.parse(firstUrlObj.query);
-//         const prevQuery = qs.parse(prevUrlObj.query);
+        const firstQuery = qs.parse(firstUrlObj.query);
+        const prevQuery = qs.parse(prevUrlObj.query);
 
-//         expect(firstQuery.limit).toBe('1');
-//         expect(firstQuery.page).toBe('1');
-//         expect(prevQuery.limit).toBe('1');
-//         expect(prevQuery.page).toBe('1');
+        expect(firstQuery.limit).toBe('1');
+        expect(firstQuery.page).toBe('1');
+        expect(prevQuery.limit).toBe('1');
+        expect(prevQuery.page).toBe('1');
 
-//         expect(Array.isArray(json)).toBe(true);
-//         expect(json.length).toBe(1);
-//         expect(json[0]).toHaveProperty('_id');
-//         expect(json[0]).toHaveProperty('email');
-//       })
-//   ));
-// });
+        expect(Array.isArray(json)).toBe(true);
+        expect(json.length).toBe(1);
+        expect(json[0]).toHaveProperty('_id');
+        expect(json[0]).toHaveProperty('email');
+      })
+  ));
+});
 
 
 describe('GET /users/:uid', () => {

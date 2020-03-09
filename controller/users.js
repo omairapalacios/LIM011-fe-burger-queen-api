@@ -13,12 +13,13 @@ module.exports = {
     return collection()
       .then((collectionUser) => collectionUser.count())
       .then((count) => {
-        // console.log('count...', count);
+      //  console.log('count...', count);
         const numbersPages = Math.ceil(count / limit);
         // console.log('numbersPages...', numbersPages);
-        const skip = (numbersPages === 0) ? 1 : (numbersPages - 1) * limit;
-        // console.log('skip...', skip);
-        // Paginaciòn.
+        const skip = (limit * page) - limit;
+        //  console.log('skip...', skip);
+        // Compaginaciòn.
+
         return collection()
           .then((collectionUser) => collectionUser.find().skip(skip).limit(limit).toArray())
           .then((users) => {

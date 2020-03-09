@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const config = require('../config');
-const collection = require('../conecction/collectionUser');
+const collection = require('../connection/collectionUsers');
 
 const { secret } = config;
 

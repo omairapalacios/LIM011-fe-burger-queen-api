@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const collection = require('../conecction/collectionUser');
+const collection = require('../connection/collectionUsers');
 
 const {
   requireAdmin,

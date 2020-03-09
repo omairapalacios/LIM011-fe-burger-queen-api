@@ -3,7 +3,7 @@
 const { ObjectID } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
-const collection = require('../conecction/collectionUser');
+const collection = require('../connection/collectionUsers');
 
 module.exports = (secret) => (req, resp, next) => {
   const { authorization } = req.headers;

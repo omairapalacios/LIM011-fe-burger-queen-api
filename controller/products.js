@@ -1,5 +1,5 @@
 const { ObjectID } = require('mongodb');
-const collection = require('../conecction/collectionProduct');
+const collection = require('../connection/collectionProducts');
 const { paginacion } = require('../utils/utils');
 
 module.exports = {
@@ -18,14 +18,14 @@ module.exports = {
         const numbersPages = Math.ceil(count / limit);
         // console.log('numbersPages: ', numbersPages);
         // Calcular los saltos.
-        const skip = (numbersPages === 0) ? 1 : (numbersPages - 1) * limit;
+        const skip = (limit * page) - limit;
         // console.log('skip', skip);
         return collection()
           .then((collectionProduct) => collectionProduct.find().skip(skip).limit(limit).toArray())
           .then((product) => {
             // console.log('product...', product);
             // Paginacion.
-            // resp.set('link', paginacion(protocolo, page, limit, numbersPages));
+            resp.set('link', paginacion(protocolo, page, limit, numbersPages));
             // console.log('SOLO resp: ', resp.link);
             // Los Productos.
             resp.send(product);

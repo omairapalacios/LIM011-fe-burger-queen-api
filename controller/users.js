@@ -104,9 +104,9 @@ module.exports = {
                 roles: roles || user.roles,
               },
             }))
-          .then(() => {
-            resp.status(200).send({ message: 'usuario actualizado exitosamente' });
-          }).catch(() => next(404));
+          .then(() => collection()
+            .then((collectionProduct) => collectionProduct.findOne(condition))
+            .then((user) => resp.send(user)));
       });
   },
 

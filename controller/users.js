@@ -5,9 +5,8 @@ const collection = require('../connection/collectionUsers');
 module.exports = {
   getUsers: (req, resp, next) => {
     // req.query: parametros de consulta seguidos de ? y separados por &
-    // console.log('Soy req:  ', req);
     // console.log('Soy req.query:  ', req.query);
-
+    // console.log('Soy req:  ', req);
     // Limite de documentos.
     const limit = parseInt(req.query.limit, 10) || 10;
     // Numero de paginas.

@@ -1,6 +1,6 @@
 const getDatabase = require('./connectDB');
 
-const collectionUser = () => getDatabase()
-  .then((dataBase) => dataBase.collection('users'));
+const collectionProducts = () => getDatabase()
+  .then((dataBase) => dataBase.collection('products'));
 
-module.exports = collectionUser;
+module.exports = collectionProducts;

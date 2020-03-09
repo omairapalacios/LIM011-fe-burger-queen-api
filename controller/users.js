@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { getIdOrEmail } = require('../utils/utils');
-const collection = require('../conecction/collectionUser');
+const collection = require('../connection/collectionUser');
 
 module.exports = {
   getUsers: (req, resp, next) => {

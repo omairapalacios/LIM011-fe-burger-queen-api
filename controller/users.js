@@ -4,10 +4,9 @@ const collection = require('../conecction/collectionUser');
 
 module.exports = {
   getUsers: (req, resp, next) => {
-    // console.log('Soy req.query:  ', req);
-    console.log('Soy req.query:  ', req.query.page);
-    console.log('Soy req.query:  ', req.protocol);
-    console.log('Soy req.query:  ', req.path);
+    // req.query: parametros de consulta seguidos de ? y separados por &
+    // console.log('Soy req:  ', req);
+    // console.log('Soy req.query:  ', req.query);
 
     // Limite de documentos.
     const limit = parseInt(req.query.limit, 10) || 10;
@@ -17,11 +16,11 @@ module.exports = {
     return collection()
       .then((collectionUser) => collectionUser.count())
       .then((count) => {
-        console.log('count...', count);
+      //  console.log('count...', count);
         const numbersPages = Math.ceil(count / limit);
-        console.log('numbersPages...', numbersPages);
-        const skip = (numbersPages === 0) ? 1 : (numbersPages - 1) * limit;
-        console.log('skip...', skip);
+        // console.log('numbersPages...', numbersPages);
+        const skip = (limit * page) - limit;
+        //  console.log('skip...', skip);
         // Compaginaciòn.
         return collection()
           .then((collectionUser) => collectionUser.find().skip(skip).limit(limit).toArray())

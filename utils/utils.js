@@ -5,13 +5,23 @@ const { bcrypt } = require('bcrypt');
 module.exports.getIdOrEmail = (reqParam) => {
   const objQuery = {};
   if (reqParam.indexOf('@') === -1) {
-    // query = { _id: new ObjectID(reqParam) };
     objQuery._id = new ObjectID(reqParam);
   } else {
-    // query = { email: reqParam };
     objQuery.email = reqParam;
   }
   return objQuery;
+};
+
+module.exports.paginacion = (url, page, limit, numbersPages) => {
+  const firstPage = `<${url}?limit=${limit}&page=${1}>; rel="first"`;
+  // console.log('firstPage', firstPage);
+  const prevPage = `<${url}?limit=${limit}&page=${page - 1}>; rel="prev"`;
+  // console.log('prevPage', prevPage);
+  const nextPage = `<${url}?limit=${limit}&page=${page + 1}>; rel="next"`;
+  // console.log('nextPage', nextPage);
+  const lastPage = `<${url}?limit=${limit}&page=${numbersPages}>; rel="last"`;
+  // console.log('lastPage', lastPage);
+  return `${firstPage}, ${prevPage}, ${nextPage}, ${lastPage}`;
 };
 
 // Funcion para Encriptar Password.

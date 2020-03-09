@@ -1,12 +1,10 @@
 const bcrypt = require('bcrypt');
-const { getIdOrEmail } = require('../utils/utils');
+const { getIdOrEmail, paginacion } = require('../utils/utils');
 const collection = require('../connection/collectionUsers');
 
 module.exports = {
   getUsers: (req, resp, next) => {
-    // req.query: parametros de consulta seguidos de ? y separados por &
-    // console.log('Soy req.query:  ', req.query);
-    // console.log('Soy req:  ', req);
+    const protocolo = `${req.protocol}://${req.get('host')}${req.path}`;
     // Limite de documentos.
     const limit = parseInt(req.query.limit, 10) || 10;
     // Numero de paginas.
@@ -21,42 +19,16 @@ module.exports = {
         const skip = (limit * page) - limit;
         //  console.log('skip...', skip);
         // Compaginaciòn.
+
         return collection()
           .then((collectionUser) => collectionUser.find().skip(skip).limit(limit).toArray())
           .then((users) => {
-            console.log('users...', users);
-            const firstPage = `</users?limit=${limit}&page=${1}>; rel="first"`;
-            console.log('first:', firstPage);
-            const prevPage = `</users?limit=${limit}&page=${page - 1}>; rel="prev"`;
-            const nextPage = `</users?limit=${limit}&page=${page + 1}>; rel="next"`;
-            const lastPage = `</users?limit=${limit}&page=${numbersPages}>; rel="last"`;
-            resp.setHeader('link', `${firstPage}, ${prevPage}, ${nextPage}, ${lastPage}`);
+            resp.set('link', paginacion(protocolo, page, limit, numbersPages));
+            console.log('soy quee', resp.link);
             resp.send(users);
           });
       });
   },
-
-  /**
-   * getUsers: (req, resp, next) => {
-    // console.log('Soy req.query:  ', req);
-    console.log('Soy req.query:  ', req.query.page);
-    console.log('Soy req.query:  ', req.protocol);
-    console.log('Soy req.query:  ', req.path);
-    return collection()
-      .then((collectionUser) => {
-        collectionUser.find().toArray((err, users) => {
-          if (err) throw err;
-          // console.log('RESULT...!!!', users);
-          resp.send({
-            _id: users.ops[0]._id,
-            email: users.ops[0].email,
-            roles: users.ops[0].roles,
-          });
-        });
-      });
-  },
-   */
-
   createUser: (req, resp, next) => { // NOTA: Consultar si tambien se crearàn user admin.
     if (!req.body.email || !req.body.password) {
       return next(400);

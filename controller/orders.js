@@ -1,7 +1,5 @@
 const { ObjectID } = require('mongodb');
-const collection = require('../connection/collectionOrders');
-const collectionProd = require('../connection/collectionProducts');
-
+const collection = require('../connection/collection');
 
 module.exports = {
   createOrder: (req, resp, next) => {
@@ -22,16 +20,37 @@ module.exports = {
     };
     return collection()
       .then((collectionOrders) => collectionOrders.insertOne(newOrder))
-      .then((order) => {
-        console.log(order);
-        resp.send(order.ops[0]);
-        // return collectionProd()
-        //   .then((collectionProducts) => {
-        //     collectionProducts.find({ _id: order.products.productId })
-        //       .then((products) => {
-        //         console.log(products);
-        //       });
-        //   });
-      });
+      .then((order) => collection()
+        .then((collectionOrders) => collectionOrders.findOne(order.insertedId[0])
+          .then(() => collection()
+            .then((collectionOrders) => collectionOrders.aggregate([{
+              $lookup:
+                {
+                  from: 'products',
+                  localField: 'products.productId',
+                  foreignField: '_id',
+                  as: 'query-products',
+                },
+            }]).toArray((err, result) => {
+              if (err) throw err;
+              console.log(result);
+            })))));
   },
 };
+
+
+/*   $lookup:
+          {
+            from: 'products',
+            localField: 'products.productId',
+            foreignField: '_id',
+            as: 'query-products',
+          }, */
+/* .toArray((err, result) => {
+            if (err) throw err;
+            return result.forEach((order) => {
+              return order.products.forEach((product) => {
+                console.log('soy product', product);
+              });
+            });
+          })); */

@@ -2,19 +2,14 @@ const { MongoClient } = require('mongodb');
 const config = require('../config');
 
 let database;
-
-const getDatabase = () => {
+// conección a la mongodb de forma nativa
+module.exports = () => {
   if (!database) {
     return MongoClient.connect(config.dbUrl, { useUnifiedTopology: true })
-      .then((dBase) => {
-        database = dBase.db();
+      .then((client) => {
+        database = client.db('burger-queen');
         return database;
-      })
-      .catch((err) => {
-        console.log(err);
       });
   }
   return Promise.resolve(database);
 };
-
-module.exports = getDatabase;

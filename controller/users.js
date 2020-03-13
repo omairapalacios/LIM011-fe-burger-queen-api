@@ -1,35 +1,35 @@
 const bcrypt = require('bcrypt');
-const { getIdOrEmail, paginacion } = require('../utils/utils');
-const collection = require('../connection/collectionUsers');
+const { getIdOrEmail, getPagination } = require('../utils/utils');
+const collection = require('../connection/collection');
 
 module.exports = {
   getUsers: (req, resp, next) => {
-    const protocolo = `${req.protocol}://${req.get('host')}${req.path}`;
-    // Limite de documentos.
+
+    // crear url
+    const url = `${req.protocol}://${req.get('host')}${req.path}`;
+
+    // límite de documentos
     const limit = parseInt(req.query.limit, 10) || 10;
-    // Numero de paginas.
+
+    // número de páginas
     const page = parseInt(req.query.page, 10) || 1;
-    // Calcular saltos.
-    return collection()
+
+    // calcular saltos
+    return collection('users')
       .then((collectionUser) => collectionUser.count())
       .then((count) => {
-      //  console.log('count...', count);
-        const numbersPages = Math.ceil(count / limit);
-        // console.log('numbersPages...', numbersPages);
+        const numberPages = Math.ceil(count / limit);
         const skip = (limit * page) - limit;
-        //  console.log('skip...', skip);
-        // Compaginaciòn.
 
-        return collection()
+        return collection('users')
           .then((collectionUser) => collectionUser.find().skip(skip).limit(limit).toArray())
           .then((users) => {
-            resp.set('link', paginacion(protocolo, page, limit, numbersPages));
-            console.log('soy quee', resp.link);
+            resp.set('link', getPagination(url, page, limit, numberPages));
             resp.send(users);
           });
       });
   },
-  createUser: (req, resp, next) => { // NOTA: Consultar si tambien se crearàn user admin.
+  createUser: (req, resp, next) => {
     if (!req.body.email || !req.body.password) {
       return next(400);
     } if (req.body.email.indexOf('@') === -1) {
@@ -39,15 +39,17 @@ module.exports = {
     }
     const { email, roles = { admin: false } } = req.body;
     let { password } = req.body;
+
+    // encriptar password
     password = bcrypt.hashSync(password, 10);
 
-    return collection()
+    return collection('users')
       .then((collectionUser) => collectionUser.findOne({ email }))
       .then((user) => {
         if (user === null) {
-          return collection()
+          return collection('users')
             .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
-            .then(() => collection())
+            .then(() => collection('users'))
             .then((collectionUser) => collectionUser.insertOne({ email, password, roles }))
             .then((newUser) => {
               resp.status(200).send({
@@ -62,10 +64,10 @@ module.exports = {
       .catch(() => next(400));
   },
   getUserUid: (req, resp, next) => {
-    const condition = getIdOrEmail(req.params.uid);
+    const uid = getIdOrEmail(req.params.uid);
 
-    return collection()
-      .then((collectionUser) => collectionUser.findOne(condition))
+    return collection('users')
+      .then((collectionUser) => collectionUser.findOne(uid))
       .then((user) => {
         if (user !== null) {
           resp.status(200).send({
@@ -79,11 +81,11 @@ module.exports = {
       .catch(() => next(400));
   },
   updateUserUid: (req, resp, next) => {
-    const condition = getIdOrEmail(req.params.uid);
+    const uid = getIdOrEmail(req.params.uid);
     const { email, password, roles } = req.body;
 
-    return collection()
-      .then((collectionUser) => collectionUser.findOne(condition))
+    return collection('users')
+      .then((collectionUser) => collectionUser.findOne(uid))
       .then((user) => {
         if (!user) {
           return next(404);
@@ -95,8 +97,8 @@ module.exports = {
           return next(400);
         }
 
-        return collection()
-          .then((collectionUser) => collectionUser.updateOne(condition,
+        return collection('users')
+          .then((collectionUser) => collectionUser.updateOne(uid,
             {
               $set: {
                 email: email || user.email,
@@ -104,22 +106,22 @@ module.exports = {
                 roles: roles || user.roles,
               },
             }))
-          .then(() => collection()
-            .then((collectionProduct) => collectionProduct.findOne(condition))
+          .then(() => collection('users')
+            .then((collectionProduct) => collectionProduct.findOne(uid))
             .then((user) => resp.send(user)));
       });
   },
 
   deleteUser: (req, resp, next) => {
-    const condition = getIdOrEmail(req.params.uid);
-    return collection()
-      .then((collectionUser) => collectionUser.findOne(condition))
+    const uid = getIdOrEmail(req.params.uid);
+    return collection('users')
+      .then((collectionUser) => collectionUser.findOne(uid))
       .then((user) => {
         if (!user) {
           return next(404);
         }
-        return collection()
-          .then((collectionUser) => collectionUser.deleteOne(condition))
+        return collection('users')
+          .then((collectionUser) => collectionUser.deleteOne(uid))
           .then(() => {
             resp.status(200).send({ message: 'usuario eliminado exitosamente' });
           });

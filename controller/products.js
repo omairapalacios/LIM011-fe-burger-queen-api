@@ -1,6 +1,6 @@
 const { ObjectID } = require('mongodb');
-const collection = require('../connection/collectionProducts');
-const { paginacion } = require('../utils/utils');
+const collection = require('../connection/collection');
+const { getPagination } = require('../utils/utils');
 
 module.exports = {
   getProducts: (req, resp, next) => {
@@ -25,7 +25,7 @@ module.exports = {
           .then((product) => {
             // console.log('product...', product);
             // Paginacion.
-            resp.set('link', paginacion(protocolo, page, limit, numbersPages));
+            resp.set('link', getPagination(protocolo, page, limit, numbersPages));
             // console.log('SOLO resp: ', resp.link);
             // Los Productos.
             resp.send(product);

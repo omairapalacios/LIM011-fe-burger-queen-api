@@ -9,7 +9,7 @@ module.exports.validateEmail = (email) => {
 // función para obtener uid : email ó Id
 module.exports.getIdOrEmail = (uid) => {
   const queryUid = {};
-  if (!(validateEmail(uid))) {
+  if (!(this.validateEmail(uid))) {
     queryUid._id = new ObjectId(uid);
   } else {
     queryUid.email = uid;

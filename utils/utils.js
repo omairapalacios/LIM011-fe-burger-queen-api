@@ -12,7 +12,7 @@ module.exports.getIdOrEmail = (reqParam) => {
   return objQuery;
 };
 
-module.exports.paginacion = (url, page, limit, numbersPages) => {
+module.exports.getPagination = (url, page, limit, numbersPages) => {
   const firstPage = `<${url}?limit=${limit}&page=${1}>; rel="first"`;
   // console.log('firstPage', firstPage);
   const prevPage = `<${url}?limit=${limit}&page=${page - 1}>; rel="prev"`;

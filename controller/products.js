@@ -1,10 +1,10 @@
-const { ObjectID } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const collection = require('../connection/collection');
 const { getPagination } = require('../utils/utils');
 
 module.exports = {
   getProducts: (req, resp, next) => {
-    const protocolo = `${req.protocol}://${req.get('host')}${req.path}`;
+    const url = `${req.protocol}://${req.get('host')}${req.path}`;
     const limit = parseInt(req.query.limit, 10) || 10;
     // console.log('limit: ', limit);
     const page = parseInt(req.query.page, 10) || 1;
@@ -25,7 +25,7 @@ module.exports = {
           .then((product) => {
             // console.log('product...', product);
             // Paginacion.
-            resp.set('link', getPagination(protocolo, page, limit, numbersPages));
+            resp.set('link', getPagination(url, page, limit, numbersPages));
             // console.log('SOLO resp: ', resp.link);
             // Los Productos.
             resp.send(product);
@@ -60,7 +60,7 @@ module.exports = {
   getProductUid: (req, resp, next) => {
     let query;
     try {
-      query = new ObjectID(req.params.productId);
+      query = new ObjectId(req.params.productId);
     } catch (error) {
       return next(404);
     }
@@ -84,7 +84,7 @@ module.exports = {
   updateProductUid: (req, resp, next) => {
     let query;
     try {
-      query = new ObjectID(req.params.productId);
+      query = new ObjectId(req.params.productId);
     } catch (error) {
       return next(404);
     }
@@ -119,7 +119,7 @@ module.exports = {
   deleteProductUid: (req, resp, next) => {
     let query;
     try {
-      query = new ObjectID(req.params.productId);
+      query = new ObjectId(req.params.productId);
     } catch (error) {
       return next(404);
     }

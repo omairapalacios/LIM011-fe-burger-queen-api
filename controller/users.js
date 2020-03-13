@@ -4,7 +4,6 @@ const collection = require('../connection/collection');
 
 module.exports = {
   getUsers: (req, resp, next) => {
-
     // crear url
     const url = `${req.protocol}://${req.get('host')}${req.path}`;
 

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-unused-expressions */
-const { ObjectID } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
 const collection = require('../connection/collection');
@@ -28,7 +28,7 @@ module.exports = (secret) => (req, resp, next) => {
 
     // verifica la identidad del usuario usando decodeToken.uid
     return collection('users')
-      .then((collectionUser) => collectionUser.findOne({ _id: ObjectID(decodedToken.uid) })
+      .then((collectionUser) => collectionUser.findOne({ _id: ObjectId(decodedToken.uid) })
         .then((user) => {
           // asignamos usuario autenticado a la cabecera
           req.headers.user = user;

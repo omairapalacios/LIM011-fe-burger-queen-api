@@ -1,10 +1,8 @@
-const { ObjectID } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const collection = require('../connection/collection');
 
 module.exports = {
   createOrder: (req, resp, next) => {
-    /* console.log(req.body.products); */
-    // Datos que recibo del Navegador.
     if (!req.body.userId || !(req.body.products).length) {
       return next(400);
     }
@@ -12,7 +10,7 @@ module.exports = {
       userId: req.body.userId,
       client: req.body.client,
       products: req.body.products.map((product) => ({
-        productId: new ObjectID(product.productId),
+        productId: new ObjectId(product.productId),
         qty: product.qty,
       })),
       status: 'pending',

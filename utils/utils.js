@@ -1,11 +1,11 @@
-const { ObjectID } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const { bcrypt } = require('bcrypt');
 
 // Funcion que se encarga de obtener el Email o ID.
 module.exports.getIdOrEmail = (reqParam) => {
   const objQuery = {};
   if (reqParam.indexOf('@') === -1) {
-    objQuery._id = new ObjectID(reqParam);
+    objQuery._id = new ObjectId(reqParam);
   } else {
     objQuery.email = reqParam;
   }

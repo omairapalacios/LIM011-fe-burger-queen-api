@@ -1,10 +1,15 @@
 const { ObjectId } = require('mongodb');
 const { bcrypt } = require('bcrypt');
 
+const validateEmail = (email) => {
+  const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return regex.test(String(email).toLowerCase());
+};
+
 // función para obtener uid : email ó Id
 module.exports.getIdOrEmail = (uid) => {
   const queryUid = {};
-  if (uid.indexOf('@') === -1) {
+  if (!(validateEmail(uid))) {
     queryUid._id = new ObjectId(uid);
   } else {
     queryUid.email = uid;

@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { getIdOrEmail, getPagination } = require('../utils/utils');
+const { getIdOrEmail, getPagination, validateEmail } = require('../utils/utils');
 const collection = require('../connection/collection');
 
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
   createUser: (req, resp, next) => {
     if (!req.body.email || !req.body.password) {
       return next(400);
-    } if (req.body.email.indexOf('@') === -1) {
+    } if (!(validateEmail(req.body.email))) {
       return next(400);
     } if (req.body.password.length <= 3) {
       return next(400);

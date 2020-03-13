@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const config = require('../config');
-const collection = require('../connection/collectionUsers');
+const collection = require('../connection/collection');
 
 const { secret } = config;
 
@@ -19,27 +19,29 @@ module.exports = (app, nextMain) => {
    * @code {400} si no se proveen `email` o `password` o ninguno de los dos
    * @auth No requiere autenticación
    */
-  // Valida el ingreso de email y password
+
   app.post('/auth', (req, resp, next) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return next(400);
     }
-    // Valida el ingreso de email y password de cada usuario y genera token
-    return collection()
+    return collection('users')
       .then((collectionUser) => collectionUser.findOne({ email })
-        .then((doc) => {
-          if (doc === null) {
+        .then((user) => {
+          if (user === null) {
             return next(400);
           }
-          if (doc.email === email && bcrypt.compareSync(password, doc.password)) {
+
+          // desencripta y compara password
+          if (user.email === email && bcrypt.compareSync(password, user.password)) {
             const payload = {
-              uid: doc._id,
+              uid: user._id,
               iss: 'burger-queen-api',
               expiresIn: 60 * 60 * 24,
             };
+
+            // genera token de autenticación
             const token = jwt.sign(payload, secret);
-            // console.log('token: ', token);
             return resp.status(200).json({ token });
           }
         }));

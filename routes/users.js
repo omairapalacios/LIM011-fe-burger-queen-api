@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const collection = require('../connection/collectionUsers');
+const collection = require('../connection/collection');
 
 const {
   requireAdmin,
@@ -14,8 +14,9 @@ const {
   deleteUser,
 } = require('../controller/users');
 
-// Valida el ingreso de email y password de las variables globales
 const initAdminUser = (app, next) => {
+
+  // obtiene variables globales
   const { adminEmail, adminPassword } = app.get('config');
   if (!adminEmail || !adminPassword) {
     return next();
@@ -26,18 +27,18 @@ const initAdminUser = (app, next) => {
     password: bcrypt.hashSync(adminPassword, 10),
     roles: { admin: true },
   };
-  // TODO: crear usuario admin
-  return collection()
+  // crea usuario admin
+  return collection('users')
     .then((collectionUser) => collectionUser.findOne({ email: adminEmail }))
-    .then((doc) => {
-      if (doc === null) {
-        return collection()
+    .then((user) => {
+      if (user === null) {
+        return collection('users')
           .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
-          .then(() => collection())
+          .then(() => collection('users'))
           .then((collectionUser) => collectionUser.insertOne(adminUser))
           .then(() => next());
       }
-      next(403);
+      return next(403);
     }).catch(() => next(500));
 };
 

@@ -3,40 +3,43 @@
 const { ObjectID } = require('mongodb');
 const jwt = require('jsonwebtoken');
 
-const collection = require('../connection/collectionUsers');
+const collection = require('../connection/collection');
 
 module.exports = (secret) => (req, resp, next) => {
+
+  // obtiene cabecera de autenticación
   const { authorization } = req.headers;
 
   if (!authorization) {
     return next();
   }
+
+  // separa el tipo de autentificación : 'bearer' del token generado
   const [type, token] = authorization.split(' ');
   if (type.toLowerCase() !== 'bearer') {
     return next();
   }
+
+  // decodifica token { uid, secret, exp ...}
   jwt.verify(token, secret, (err, decodedToken) => {
-    // console.log('decoded token', decodedToken : { uid, secret, exp ...});
     if (err) {
       return next(403);
     }
-    // TODO: Verificar identidad del usuario usando `decodeToken.uid`
-    return collection()
+
+    // verifica la identidad del usuario usando decodeToken.uid
+    return collection('users')
       .then((collectionUser) => collectionUser.findOne({ _id: ObjectID(decodedToken.uid) })
-        .then((doc) => {
-          // console.log('req.header user', req.headers.user);
-          req.headers.user = doc;
-          // console.log('req.header user despues de agregar doc', req.headers.user);
+        .then((user) => {
+          // asignamos usuario autenticado a la cabecera
+          req.headers.user = user;
           return next();
         })
         .catch(() => next(404)));
   });
 };
 
-// Verifica si un usuario normal o admin esta autenticado. {Propiedad:Valor}. true/false
 module.exports.isAuthenticated = (req) => (req.headers.user);
 
-// Indica si usuario es Administrador o no. True/False.
 module.exports.isAdmin = (req) => (req.headers.user.roles.admin);
 
 module.exports.isUser = (req) => (
@@ -44,6 +47,7 @@ module.exports.isUser = (req) => (
   || req.headers.user.email === req.params.uid
 );
 
+// middlewares
 module.exports.requireAdminOrUser = (req, resp, next) => (
   (!module.exports.isAuthenticated(req))
     ? next(401)

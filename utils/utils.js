@@ -1,15 +1,15 @@
 const { ObjectId } = require('mongodb');
 const { bcrypt } = require('bcrypt');
 
-// Funcion que se encarga de obtener el Email o ID.
-module.exports.getIdOrEmail = (reqParam) => {
-  const objQuery = {};
-  if (reqParam.indexOf('@') === -1) {
-    objQuery._id = new ObjectId(reqParam);
+// función para obtener uid : email ó Id
+module.exports.getIdOrEmail = (uid) => {
+  const queryUid = {};
+  if (uid.indexOf('@') === -1) {
+    queryUid._id = new ObjectId(uid);
   } else {
-    objQuery.email = reqParam;
+    queryUid.email = uid;
   }
-  return objQuery;
+  return queryUid;
 };
 
 module.exports.getPagination = (url, page, limit, numbersPages) => {
@@ -24,7 +24,7 @@ module.exports.getPagination = (url, page, limit, numbersPages) => {
   return `${firstPage}, ${prevPage}, ${nextPage}, ${lastPage}`;
 };
 
-// Funcion para Encriptar Password.
+// función para encriptar password
 module.exports.passwordBcrypt = (oldPassword) => {
   const newPassword = bcrypt.hashSync(oldPassword, 10);
   return newPassword;

@@ -6,34 +6,22 @@ module.exports = {
   getProducts: (req, resp, next) => {
     const url = `${req.protocol}://${req.get('host')}${req.path}`;
     const limit = parseInt(req.query.limit, 10) || 10;
-    // console.log('limit: ', limit);
     const page = parseInt(req.query.page, 10) || 1;
-    // console.log('paginas: ', page);
-    // Calcular Saltos.
-    return collection()
+
+    return collection('products')
       .then((collectionProduct) => collectionProduct.count())
       .then((count) => {
-        // console.log('count: ', count);
-        // Calcular nùmero de paginas.
         const numbersPages = Math.ceil(count / limit);
-        // console.log('numbersPages: ', numbersPages);
-        // Calcular los saltos.
         const skip = (limit * page) - limit;
-        // console.log('skip', skip);
-        return collection()
+        return collection('products')
           .then((collectionProduct) => collectionProduct.find().skip(skip).limit(limit).toArray())
           .then((product) => {
-            // console.log('product...', product);
-            // Paginacion.
             resp.set('link', getPagination(url, page, limit, numbersPages));
-            // console.log('SOLO resp: ', resp.link);
-            // Los Productos.
             resp.send(product);
           });
       });
   },
   createProduct: (req, resp, next) => {
-    // Datos que recibo del Navegador.
     if (!req.body.name && !req.body.price) {
       return next(400);
     }
@@ -44,7 +32,7 @@ module.exports = {
       type: req.body.type,
       dateEntry: new Date(),
     };
-    return collection()
+    return collection('products')
       .then((collectionProduct) => collectionProduct.insertOne(newProduct))
       .then((product) => {
         resp.send({
@@ -64,13 +52,12 @@ module.exports = {
     } catch (error) {
       return next(404);
     }
-    return collection()
+    return collection('products')
       .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
       .then((product) => {
         if (!product) {
           return next(404);
         }
-        // console.log(product);
         return resp.send({
           _id: product._id,
           name: product.name,
@@ -88,20 +75,19 @@ module.exports = {
     } catch (error) {
       return next(404);
     }
-    return collection()
+    return collection('products')
       .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
       .then((product) => {
         if (!product) {
           return next(404);
         }
-        console.log('PUT: product id', req.body.name);
         if (typeof (req.body.name) !== 'string'
             && typeof (req.body.price) !== 'number'
             && typeof (req.body.image) !== 'string'
             && typeof (req.body.type) !== 'string') {
           return next(400);
         }
-        return collection()
+        return collection('products')
           .then((collectionProduct) => collectionProduct.updateOne({ _id: query }, {
             $set: {
               name: req.body.name || product.name,
@@ -110,7 +96,7 @@ module.exports = {
               type: req.body.type || product.type,
             },
           }))
-          .then(() => collection()
+          .then(() => collection('products')
             .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
             .then((product) => resp.send(product)));
       })
@@ -123,13 +109,13 @@ module.exports = {
     } catch (error) {
       return next(404);
     }
-    return collection()
+    return collection('products')
       .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
       .then((product) => {
         if (!product) {
           return next(404);
         }
-        return collection()
+        return collection('products')
           .then((collectionProduct) => collectionProduct.deleteOne({ _id: query }))
           .then(() => resp.send({ message: 'producto eliminado exitosamente' }));
       })

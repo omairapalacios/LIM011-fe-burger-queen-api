@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 const collection = require('../connection/collection');
-const { getPagination } = require('../utils/utils');
+const { getPagination, demo } = require('../utils/utils');
 
 module.exports = {
   getProducts: (req, resp, next) => {

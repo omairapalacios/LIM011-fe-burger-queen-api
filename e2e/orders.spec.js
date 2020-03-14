@@ -5,7 +5,7 @@ const {
 } = process;
 
 
-describe.only('POST /orders', () => {
+describe('POST /orders', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders', { method: 'POST' })
       .then((resp) => expect(resp.status).toBe(401))
@@ -41,7 +41,7 @@ describe.only('POST /orders', () => {
       })
       .then(([product, user]) => fetchAsTestUser('/orders', {
         method: 'POST',
-        body: { products: [{ productId: product._id, qty: 5, client: 'client' }, { productId: product._id, qty: 5, client: 'client' }], userId: user._id },
+        body: { products: [{ productId: product._id, qty: 5, client: 'client' }], userId: user._id },
       }))
       .then((resp) => {
         expect(resp.status).toBe(200);
@@ -62,7 +62,7 @@ describe.only('POST /orders', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 11 },
+        body: { name: 'Test', price: 25 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -85,7 +85,7 @@ describe.only('POST /orders', () => {
         expect(Array.isArray(json.products)).toBe(true);
         expect(json.products.length).toBe(1);
         expect(json.products[0].product.name).toBe('Test');
-        expect(json.products[0].product.price).toBe(11);
+        expect(json.products[0].product.price).toBe(25);
       })
   ));
 });

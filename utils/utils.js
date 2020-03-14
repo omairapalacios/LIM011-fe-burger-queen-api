@@ -1,5 +1,7 @@
 const { ObjectId } = require('mongodb');
-const { bcrypt } = require('bcrypt');
+const collection = require('../connection/collection');
+
+// const { bcrypt } = require('bcrypt');
 
 module.exports.validateEmail = (email) => {
   const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -29,8 +31,34 @@ module.exports.getPagination = (url, page, limit, numbersPages) => {
   return `${firstPage}, ${prevPage}, ${nextPage}, ${lastPage}`;
 };
 
-// función para encriptar password
+module.exports.getProducts = (arrayIds, orderId, resp, next) => {
+  return collection('products')
+    .then((collectionProducts) => collectionProducts.find({ _id: { $in: arrayIds } }).toArray()
+      .then((product) => {
+        // console.log(product);
+        return collection('orders')
+          .then((collectionOrders) => collectionOrders.findOne({ _id: new ObjectId(orderId) }))
+          .then((order) => {
+            if (order === null) {
+              return next(404);
+            }
+            // console.log('SOY ORDER 2DA:', order.products);
+            //  order.products.map((ele) => console.log('desde map: ', ele));
+            // console.log(arr);
+            // eslint-disable-next-line no-param-reassign
+            order.products = order.products.map((elemProduct) => ({
+              qty: elemProduct.qty,
+              product: product.find((p) => p._id.equals(elemProduct.productId)),
+            }));
+            /*     console.log('producto', order.products);
+            console.log('orden', order); */
+            resp.send(order);
+          });
+      }));
+};
+/* // función para encriptar password
 module.exports.passwordBcrypt = (oldPassword) => {
   const newPassword = bcrypt.hashSync(oldPassword, 10);
   return newPassword;
 };
+ */

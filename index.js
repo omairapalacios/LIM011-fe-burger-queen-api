@@ -1,6 +1,6 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
 const config = require('./config');
+const connectMongodb = require('./connection/connect_db');
 const authMiddleware = require('./middleware/auth');
 const errorHandler = require('./middleware/error');
 const routes = require('./routes');
@@ -8,26 +8,24 @@ const pkg = require('./package.json');
 
 const { port, dbUrl, secret } = config;
 const app = express();
-app.set('config', config);
-app.set('pkg', pkg);
 
-// parse application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(authMiddleware(secret));
+connectMongodb()
+  .then(() => {
+    app.set('config', config);
+    app.set('pkg', pkg);
 
+    // parse application/x-www-form-urlencoded
+    app.use(express.urlencoded({ extended: false }));
+    app.use(express.json());
+    app.use(authMiddleware(secret));
 
-// Connect to the db native form
-MongoClient.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err, db) => {
-  if (err) throw err;
-  console.log('Connection sucessful');
-  // Registrar rutas
-  routes(app, (err) => {
-    if (err) throw err;
-    app.use(errorHandler);
-    app.listen(port, () => {
-      console.info(`App listening on port ${port}`);
+    // registrar rutas
+
+    routes(app, (err) => {
+      if (err) throw err;
+      app.use(errorHandler);
+      app.listen(port, () => {
+        console.info(`App listening on port ${port}`);
+      });
     });
   });
-  db.close();
-});

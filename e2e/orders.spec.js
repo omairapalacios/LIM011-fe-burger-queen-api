@@ -270,7 +270,7 @@ describe('GET /orders/:orderId', () => {
 });
 
 
-describe('PUT /orders/:orderId', () => {
+describe.only('PUT /orders/:orderId', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders/xxx', { method: 'PUT' })
       .then((resp) => expect(resp.status).toBe(401))

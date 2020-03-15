@@ -29,20 +29,18 @@ module.exports = (app, nextMain) => {
       .then((collectionUser) => collectionUser.findOne({ email })
         .then((user) => {
           if (user === null) {
-            return next(400);
+            return next(404);
           }
-
-          // desencripta y compara password
-          if (user.email === email && bcrypt.compareSync(password, user.password)) {
+          // desencripta y compara password.
+          if (bcrypt.compareSync(req.body.password, user.password)) {
             const payload = {
               uid: user._id,
               iss: 'burger-queen-api',
               expiresIn: 60 * 60 * 24,
             };
-
             // genera token de autenticación
             const token = jwt.sign(payload, secret);
-            return resp.status(200).json({ token });
+            resp.status(200).send({ token });
           }
         }));
   });

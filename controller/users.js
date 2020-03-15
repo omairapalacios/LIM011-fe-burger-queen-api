@@ -64,7 +64,6 @@ module.exports = {
   },
   getUserUid: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
-
     return collection('users')
       .then((collectionUser) => collectionUser.findOne(uid))
       .then((user) => {

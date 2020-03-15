@@ -15,7 +15,6 @@ const {
 } = require('../controller/users');
 
 const initAdminUser = (app, next) => {
-
   // obtiene variables globales
   const { adminEmail, adminPassword } = app.get('config');
   if (!adminEmail || !adminPassword) {

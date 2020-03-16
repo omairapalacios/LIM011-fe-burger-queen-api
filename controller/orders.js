@@ -51,12 +51,12 @@ module.exports = {
 
   updateOrders: (req, resp, next) => {
     let query;
-    const arrayStatus = ['pending', 'preparing', 'canceled', 'delivering', 'delivered'];
     try {
       query = new ObjectId(req.params.orderId);
     } catch (error) {
       return next(404);
     }
+    const arrayStatus = ['pending', 'preparing', 'canceled', 'delivering', 'delivered'];
     if (arrayStatus.indexOf(req.body.status) === -1) {
       /* const demo = (arrayStatus.indexOf(req.body.status)) === -1;
       console.log('SOY DEMO...', demo); */

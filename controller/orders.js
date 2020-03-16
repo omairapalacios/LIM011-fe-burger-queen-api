@@ -1,10 +1,25 @@
 const { ObjectId } = require('mongodb');
-const { getProducts } = require('../utils/utils');
+const { getProducts, getPagination } = require('../utils/utils');
 const collection = require('../connection/collection');
 
 module.exports = {
   getOrders: (req, resp, next) => {
-    console.log('soy request', req.query);
+    const url = `${req.protocol}://${req.get('host')}${req.path}`;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+
+    return collection('orders')
+      .then((collectionOrders) => collectionOrders.count())
+      .then((count) => {
+        const numbersPages = Math.ceil(count / limit);
+        const skip = (limit * page) - limit;
+        return collection('orders')
+          .then((collectionOrders) => collectionOrders.find().skip(skip).limit(limit).toArray())
+          .then((order) => {
+            resp.set('link', getPagination(url, page, limit, numbersPages));
+            resp.send(order);
+          });
+      });
   },
   getOrderId: (req, resp, next) => {
     let query;

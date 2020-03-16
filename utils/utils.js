@@ -34,7 +34,7 @@ module.exports.getPagination = (url, page, limit, numbersPages) => {
 module.exports.getProducts = (arrayIds, orderId, resp, next) => {
   return collection('products')
     .then((collectionProducts) => collectionProducts.find({ _id: { $in: arrayIds } }).toArray()
-      .then((product) => {
+      .then((arrayProducts) => {
         // console.log(product);
         return collection('orders')
           .then((collectionOrders) => collectionOrders.findOne({ _id: new ObjectId(orderId) }))
@@ -42,16 +42,11 @@ module.exports.getProducts = (arrayIds, orderId, resp, next) => {
             if (order === null) {
               return next(404);
             }
-            // console.log('SOY ORDER 2DA:', order.products);
-            //  order.products.map((ele) => console.log('desde map: ', ele));
-            // console.log(arr);
             // eslint-disable-next-line no-param-reassign
             order.products = order.products.map((elemProduct) => ({
               qty: elemProduct.qty,
-              product: product.find((p) => p._id.equals(elemProduct.productId)),
+              product: arrayProducts.find((p) => p._id.equals(elemProduct.productId)),
             }));
-            /*     console.log('producto', order.products);
-            console.log('orden', order); */
             resp.send(order);
           });
       }));

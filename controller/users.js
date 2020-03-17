@@ -33,7 +33,7 @@ module.exports = {
       return next(400);
     } if (!(validateEmail(req.body.email))) {
       return next(400);
-    } if (req.body.password.length <= 3) {
+    } if (req.body.password.length < 4) {
       return next(400);
     }
     const { email, roles = { admin: false } } = req.body;
@@ -51,7 +51,7 @@ module.exports = {
             .then(() => collection('users'))
             .then((collectionUser) => collectionUser.insertOne({ email, password, roles }))
             .then((newUser) => {
-              resp.status(200).send({
+              resp.send({
                 _id: newUser.ops[0]._id,
                 email: newUser.ops[0].email,
                 roles: newUser.ops[0].roles,
@@ -67,6 +67,9 @@ module.exports = {
     return collection('users')
       .then((collectionUser) => collectionUser.findOne(uid))
       .then((user) => {
+        if (!user) {
+          return next(404);
+        }
         if (user !== null) {
           resp.status(200).send({
             _id: user._id,
@@ -74,7 +77,6 @@ module.exports = {
             roles: user.roles,
           });
         }
-        return next(404);
       })
       .catch(() => next(400));
   },

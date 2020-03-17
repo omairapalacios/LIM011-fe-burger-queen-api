@@ -1,7 +1,7 @@
-// const database = require('../../connection/connect_db');
 const database = require('../../connection/__mocks__/globalSetup');
 const {
   createUser,
+  getUserUid,
 } = require('../../controller/users');
 
 
@@ -11,11 +11,10 @@ describe('createUsers', () => {
   afterAll(() => database()
     .then((db) => db.collection('users')
       .then((collecctionUser) => collecctionUser.deleteMany({}))));
-
   it('should create a new user', (done) => {
     const req = {
       body: {
-        email: 'test@test.com',
+        email: 'test1@test.com',
         password: 'wxyz',
         roles: {
           admin: false,
@@ -24,13 +23,13 @@ describe('createUsers', () => {
     };
     const resp = {
       send: (response) => {
-        expect(response.email).toBe('test@test.com');
+        expect(response.email).toBe('test1@test.com');
         expect(response.roles.admin).toBe(false);
+        done();
       },
     };
-    done();
-    const next = (code) => code;
-    createUser(req, resp, next);
+    // const next = (code) => code;
+    return createUser(req, resp);
   });
   it('should show an error 400 if not send email', (done) => {
     const req = {
@@ -43,14 +42,15 @@ describe('createUsers', () => {
     };
     const next = (code) => {
       expect(code).toBe(400);
+      done();
     };
-    done();
     createUser(req, {}, next);
   });
   it('should show an error 400 when email is not valid', (done) => {
     const req = {
       body: {
         email: 'test@test',
+        password: '12345',
         roles: {
           admin: false,
         },
@@ -58,15 +58,15 @@ describe('createUsers', () => {
     };
     const next = (code) => {
       expect(code).toBe(400);
+      done();
     };
-    done();
     createUser(req, {}, next);
   });
   it('should show an error 400 when password have less than 4 characters', (done) => {
     const req = {
       body: {
-        email: 'test@test',
-        password: '123',
+        email: 'test@test.com',
+        password: '12',
         roles: {
           admin: false,
         },
@@ -74,8 +74,65 @@ describe('createUsers', () => {
     };
     const next = (code) => {
       expect(code).toBe(400);
+      done();
     };
-    done();
     createUser(req, {}, next);
+  });
+  it('should show an error 400 if user is not exists', (done) => {
+    const req = {
+      body: {
+        email: 'test@test.com',
+        password: 't123',
+      },
+    };
+
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    };
+
+    createUser(req, {}, next);
+  });
+});
+
+describe('getUserUid', () => {
+  beforeAll(() => database()
+    .then((db) => db));
+  afterAll(() => database()
+    .then((db) => db.collection('users')
+      .then((collecctionUser) => collecctionUser.deleteMany({}))));
+  it('should get an user', (done) => {
+    const req = {
+      params: {
+        uid: 'test@test.com',
+      },
+    };
+    const resp = {
+      send: (response) => {
+        // expect(response._id).toBe('test@test.com');
+        expect(response.email).toBe('test@test.com');
+        expect(response.roles).toBe(false);
+      },
+    };
+    const next = (code) => code;
+    getUserUid(req, resp, next);
+    done();
+  });
+  it('should show an error 400 when user not found', (done) => {
+    const req = {
+      params: {
+        uid: 'test@test.com',
+      },
+    };
+    const resp = {
+      send: (response) => {
+        // expect(response._id).toBe('test@test.com');
+        expect(response.email).toBe('test@test.com');
+        expect(response.roles).toBe(false);
+      },
+    };
+    const next = (code) => code;
+    getUserUid(req, resp, next);
+    done();
   });
 });

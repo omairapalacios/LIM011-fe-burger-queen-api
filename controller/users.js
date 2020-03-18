@@ -73,7 +73,7 @@ module.exports = {
           return next(404);
         }
         if (user !== null) {
-          resp.status(200).send({
+          resp.send({
             _id: user._id,
             email: user.email,
             roles: user.roles,
@@ -124,10 +124,8 @@ module.exports = {
         }
         return collection('users')
           .then((collectionUser) => collectionUser.deleteOne(uid))
-          .then(() => {
-            resp.send({ message: 'usuario eliminado exitosamente' });
-          });
+          .then(() => resp.send({ message: 'usuario eliminado exitosamente' }));
       })
-      .catch(() => next(404));
+      .catch(() => next(400));
   },
 };

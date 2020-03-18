@@ -7,7 +7,7 @@ module.exports = () => {
   if (!database) {
     return MongoClient.connect(config.dbUrl, { useUnifiedTopology: true })
       .then((client) => {
-        database = client.db('burger-queen');
+        database = client.db(); // 'burger-queen'
         return database;
       });
   }

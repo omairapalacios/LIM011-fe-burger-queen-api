@@ -1,27 +1,26 @@
 const database = require('../../connection/__mocks__/globalSetup');
 
-// console.log(database);
-
 let db;
 const {
-  /*  createUser,
-  getUserUid, */
+  createUser,
+  getUserUid,
   getUsers,
-/*   updateUserUid,
-  deleteUser, */
-} = require('../../controller/users');
+  updateUserUid,
+  deleteUser,
+} = require('../users');
 
-/* beforeAll(async () => {
+beforeAll(async () => {
   db = await database();
   const collectionUsers = await db.collection('users');
   await collectionUsers.deleteMany({});
+  // await db.stop();
 });
-afterEach(async () => {
+/* afterEach(async () => {
   db = await database();
   const collectionUsers = await db.collection('users');
   await collectionUsers.deleteMany({});
 }); */
-/* describe('createUsers', () => {
+describe('createUsers', () => {
   it('should create a new user', (done) => {
     const req = {
       body: {
@@ -107,6 +106,19 @@ afterEach(async () => {
 });
 
 describe('getUserUid', () => {
+  it('should show an error 400 if user is not exists', (done) => {
+    const req = {
+      params: {
+        uid: 'user5@test.com',
+      },
+    };
+
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    getUserUid(req, {}, next);
+  });
   it('should get an user', (done) => {
     const req = {
       params: {
@@ -123,19 +135,6 @@ describe('getUserUid', () => {
     const next = (code) => code;
     done();
     getUserUid(req, resp, next);
-  });
-  it('should show an error 400 if user is not exists', (done) => {
-    const req = {
-      params: {
-        uid: 'user5@test.com',
-      },
-    };
-
-    const next = (code) => {
-      expect(code).toBe(404);
-      done();
-    };
-    getUserUid(req, {}, next);
   });
 });
 
@@ -319,34 +318,11 @@ describe('deleteUser', () => {
     done();
     deleteUser(req, resp, next);
   });
-}); */
-/* describe('getUsers', () => {
-  it('should get 2 users', async (done) => {
-    const req = {
-      query: {},
-      protocol: 'http',
-      path: '/users',
-      get: () => 'localhost:8080',
-    };
-    console.log(req);
-
-    const resp = {
-      set: () => {},
-      send: (response) => {
-        expect(response).toBe();
-      },
-    };
-    const next = (code) => code;
-    done();
-    getUsers(req, resp, next);
-  });
 });
- */
 describe('getUsers', () => {
-  beforeAll(async () => {
+  /* beforeAll(async () => {
     db = await database();
     const collectionUsers = await db.collection('users');
-    // console.log(collectionUsers);
     await collectionUsers.insertMany([
       {
         email: 'user@test',
@@ -361,36 +337,33 @@ describe('getUsers', () => {
         roles: { admin: false },
       },
     ]);
-  });
-
-  /* afterAll(async () => {
-    await (await db()).collection('users').deleteMany({});
-    await db().close();
   }); */
 
-  it('Deberia de poder obtener 3 usuarios', (done) => {
+  // afterAll(async () => {
+  //  await (await db()).collection('users').deleteMany({});
+  //  await db().close();
+  // });
+
+  it('Deberia de poder obtener 2 usuarios', (done) => {
     const req = {
       query: {},
       protocol: 'http',
       path: '/users',
       get: () => 'localhost:8080',
     };
-
     const resp = {
       send: (response) => {
-        console.log('Soy response...', response);
-        expect(response.length).toBe(3);
-        expect(response[0].email).toBe('user@test');
+        // console.log('Soy response...', response);
+        expect(response.length).toBe(2);
+        expect(response[0].email).toBe('test1@test.com');
         done();
       },
       set: (nameHeader, header) => {
         expect(nameHeader).toBe('link');
-        expect(header).toBe('<http://localhost:8080/users?limit=10&page=1>; rel="first", <http://localhost:8080/users?limit=10&page=0>; rel="prev", <http://localhost:8080/users?limit=10&page=2>; rel="next", <http://localhost:8080/users?limit=10&page=0>; rel="last"');
+        expect(header).toBe('<http://localhost:8080/users?limit=10&page=1>; rel="first", <http://localhost:8080/users?limit=10&page=0>; rel="prev", <http://localhost:8080/users?limit=10&page=2>; rel="next", <http://localhost:8080/users?limit=10&page=1>; rel="last"');
         done();
       },
     };
     getUsers(req, resp);
   });
-  /* it('Deberia de poder obtener un usuario por su email', () => {})
-  it('Deberia de mostar un error 404 si no existe el usuario', () => {}) */
 });

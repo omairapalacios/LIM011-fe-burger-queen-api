@@ -69,6 +69,7 @@ module.exports = {
       });
   },
   updateProductUid: (req, resp, next) => {
+    console.log('uid update', req.params);
     let query;
     try {
       query = new ObjectId(req.params.productId);

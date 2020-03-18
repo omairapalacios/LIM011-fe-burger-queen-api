@@ -15,14 +15,16 @@ module.exports = {
 
     // calcular saltos
     return collection('users')
-      .then((collectionUser) => collectionUser.count())
+      .then((collectionUser) => collectionUser.countDocuments())
       .then((count) => {
+        console.log(count);
         const numberPages = Math.ceil(count / limit);
         const skip = (limit * page) - limit;
 
         return collection('users')
           .then((collectionUser) => collectionUser.find().skip(skip).limit(limit).toArray())
           .then((users) => {
+            console.log(users);
             resp.set('link', getPagination(url, page, limit, numberPages));
             resp.send(users);
           });
@@ -45,20 +47,20 @@ module.exports = {
     return collection('users')
       .then((collectionUser) => collectionUser.findOne({ email }))
       .then((user) => {
-        if (user === null) {
-          return collection('users')
-            .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
-            .then(() => collection('users'))
-            .then((collectionUser) => collectionUser.insertOne({ email, password, roles }))
-            .then((newUser) => {
-              resp.send({
-                _id: newUser.ops[0]._id,
-                email: newUser.ops[0].email,
-                roles: newUser.ops[0].roles,
-              });
-            });
+        if (user) {
+          return next(403);
         }
-        return next(403);
+        return collection('users')
+          .then((collectionUser) => collectionUser.createIndex({ email: 1 }, { unique: true }))
+          .then(() => collection('users'))
+          .then((collectionUser) => collectionUser.insertOne({ email, password, roles }))
+          .then((newUser) => {
+            resp.send({
+              _id: newUser.ops[0]._id,
+              email: newUser.ops[0].email,
+              roles: newUser.ops[0].roles,
+            });
+          });
       })
       .catch(() => next(400));
   },
@@ -82,7 +84,7 @@ module.exports = {
   },
   updateUserUid: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
-    const { email, password, roles } = req.body;
+    // const { email, password, roles } = req.body;
 
     return collection('users')
       .then((collectionUser) => collectionUser.findOne(uid))
@@ -101,9 +103,9 @@ module.exports = {
           .then((collectionUser) => collectionUser.updateOne(uid,
             {
               $set: {
-                email: email || user.email,
-                password: password ? bcrypt.hashSync(password, 10) : user.password,
-                roles: roles || user.roles,
+                email: req.body.email || user.email,
+                password: req.body.password ? bcrypt.hashSync(req.body.password, 10) : user.password,
+                roles: req.body.password || user.roles,
               },
             }))
           .then(() => collection('users')
@@ -123,7 +125,7 @@ module.exports = {
         return collection('users')
           .then((collectionUser) => collectionUser.deleteOne(uid))
           .then(() => {
-            resp.status(200).send({ message: 'usuario eliminado exitosamente' });
+            resp.send({ message: 'usuario eliminado exitosamente' });
           });
       })
       .catch(() => next(404));

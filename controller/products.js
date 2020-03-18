@@ -9,7 +9,7 @@ module.exports = {
     const page = parseInt(req.query.page, 10) || 1;
 
     return collection('products')
-      .then((collectionProduct) => collectionProduct.count())
+      .then((collectionProduct) => collectionProduct.countDocuments())
       .then((count) => {
         const numbersPages = Math.ceil(count / limit);
         const skip = (limit * page) - limit;

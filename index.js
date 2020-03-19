@@ -6,7 +6,7 @@ const errorHandler = require('./middleware/error');
 const routes = require('./routes');
 const pkg = require('./package.json');
 
-const { port, dbUrl, secret } = config;
+const { port, secret } = config;
 const app = express();
 
 connectMongodb()

@@ -69,17 +69,20 @@ module.exports = {
       });
   },
   updateProductUid: (req, resp, next) => {
-    console.log('uid update', req.params);
+    // console.log('req.params.productId.. ', req.params.productId);
     let query;
     try {
       query = new ObjectId(req.params.productId);
     } catch (error) {
+      // console.count('estoy en el catch');
       return next(404);
     }
     return collection('products')
       .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
       .then((product) => {
+        console.log('producto encontrado', product);
         if (!product) {
+          console.count();
           return next(404);
         }
         if (typeof (req.body.name) !== 'string'

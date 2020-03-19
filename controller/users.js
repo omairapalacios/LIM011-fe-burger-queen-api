@@ -17,18 +17,17 @@ module.exports = {
     return collection('users')
       .then((collectionUser) => collectionUser.countDocuments())
       .then((count) => {
-        console.log(count);
         const numberPages = Math.ceil(count / limit);
         const skip = (limit * page) - limit;
 
         return collection('users')
           .then((collectionUser) => collectionUser.find().skip(skip).limit(limit).toArray())
           .then((users) => {
-            console.log(users);
             resp.set('link', getPagination(url, page, limit, numberPages));
             resp.send(users);
           });
-      });
+      })
+      .catch(() => next(500));
   },
   createUser: (req, resp, next) => {
     if (!req.body.email || !req.body.password) {
@@ -62,7 +61,9 @@ module.exports = {
             });
           });
       })
-      .catch(() => next(400));
+      .catch((e) => {
+        console.log(e);
+      });
   },
   getUserUid: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
@@ -80,7 +81,7 @@ module.exports = {
           });
         }
       })
-      .catch(() => next(400));
+      .catch((e) => console.log(e));
   },
   updateUserUid: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
@@ -104,14 +105,17 @@ module.exports = {
             {
               $set: {
                 email: req.body.email || user.email,
-                password: req.body.password ? bcrypt.hashSync(req.body.password, 10) : user.password,
+                password: req.body.password
+                  ? bcrypt.hashSync(req.body.password, 10)
+                  : user.password,
                 roles: req.body.password || user.roles,
               },
             }))
           .then(() => collection('users')
             .then((collectionProduct) => collectionProduct.findOne(uid))
             .then((user) => resp.send(user)));
-      });
+      })
+      .catch((e) => console.log(e));
   },
 
   deleteUser: (req, resp, next) => {
@@ -126,6 +130,6 @@ module.exports = {
           .then((collectionUser) => collectionUser.deleteOne(uid))
           .then(() => resp.send({ message: 'usuario eliminado exitosamente' }));
       })
-      .catch(() => next(400));
+      .catch((e) => console.log(e));
   },
 };

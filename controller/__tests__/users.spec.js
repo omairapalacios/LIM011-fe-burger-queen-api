@@ -1,6 +1,5 @@
-const database = require('../../connection/__mocks__/globalSetup');
+const database = require('../../connection/connect_db');
 
-let db;
 const {
   createUser,
   getUserUid,
@@ -9,18 +8,17 @@ const {
   deleteUser,
 } = require('../users');
 
-beforeAll(async () => {
-  db = await database();
-  const collectionUsers = await db.collection('users');
-  await collectionUsers.deleteMany({});
-  // await db.stop();
-});
-/* afterEach(async () => {
-  db = await database();
-  const collectionUsers = await db.collection('users');
-  await collectionUsers.deleteMany({});
-}); */
 describe('createUsers', () => {
+  beforeAll(async () => {
+    await database();
+  });
+
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
+
   it('should create a new user', (done) => {
     const req = {
       body: {
@@ -35,16 +33,17 @@ describe('createUsers', () => {
       send: (response) => {
         expect(response.email).toBe('test1@test.com');
         expect(response.roles.admin).toBe(false);
+        done();
       },
     };
-    const next = (code) => code;
-    done();
-    return createUser(req, resp, next);
+    /* const next = (code) => code; */
+    createUser(req, resp);
   });
   it('should show an error 400 if not send email', (done) => {
     const req = {
       body: {
-        password: 'wxyz',
+        email: '',
+        password: '123456',
         roles: {
           admin: false,
         },
@@ -59,8 +58,8 @@ describe('createUsers', () => {
   it('should show an error 400 when email is not valid', (done) => {
     const req = {
       body: {
-        email: 'test@test',
-        password: '12345',
+        email: 'test1@test',
+        password: '123456',
         roles: {
           admin: false,
         },
@@ -75,7 +74,7 @@ describe('createUsers', () => {
   it('should show an error 400 when password have less than 4 characters', (done) => {
     const req = {
       body: {
-        email: 'test@test.com',
+        email: 'test1@test.com',
         password: '12',
         roles: {
           admin: false,
@@ -88,16 +87,16 @@ describe('createUsers', () => {
     };
     createUser(req, {}, next);
   });
-  it('should show an error 400 if user is not exists', (done) => {
+  it('should show an error 403 if user exists', (done) => {
     const req = {
       body: {
-        email: 'test@test.com',
-        password: 't123',
+        email: 'test1@test.com',
+        password: '123456',
       },
     };
 
     const next = (code) => {
-      expect(code).toBe(400);
+      expect(code).toBe(403);
       done();
     };
 
@@ -106,10 +105,35 @@ describe('createUsers', () => {
 });
 
 describe('getUserUid', () => {
+  beforeAll(async () => {
+    await database();
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.insertMany([
+      {
+        email: 'test1@test.com',
+        password: '123456',
+        roles: {
+          admin: false,
+        },
+      },
+      {
+        email: 'admin@admin.com',
+        password: '123456',
+        roles: {
+          admin: true,
+        },
+      },
+    ]);
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
   it('should show an error 400 if user is not exists', (done) => {
     const req = {
       params: {
-        uid: 'user5@test.com',
+        uid: 'user@test.com',
       },
     };
 
@@ -122,27 +146,50 @@ describe('getUserUid', () => {
   it('should get an user', (done) => {
     const req = {
       params: {
-        uid: 'test@test.com',
+        uid: 'test1@test.com',
       },
     };
     const resp = {
       send: (response) => {
-        // expect(response._id).toBe('test@test.com');
-        expect(response.email).toBe('test@test.com');
-        expect(response.roles).toBe(false);
+        expect(response.email).toBe('test1@test.com');
+        expect(response.roles.admin).toBe(false);
+        done();
       },
     };
-    const next = (code) => code;
-    done();
-    getUserUid(req, resp, next);
+    getUserUid(req, resp);
   });
 });
 
 describe('updateUserUid', () => {
+  beforeAll(async () => {
+    await database();
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.insertMany([
+      {
+        email: 'test1@test.com',
+        password: '123456',
+        roles: {
+          admin: false,
+        },
+      },
+      {
+        email: 'admin@admin.com',
+        password: '123456',
+        roles: {
+          admin: true,
+        },
+      },
+    ]);
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
   it('should show an error 403 if user is not admin', (done) => {
     const req = {
       params: {
-        uid: 'test@test.com',
+        uid: 'test1@test.com',
       },
       headers: {
         user: {
@@ -152,8 +199,8 @@ describe('updateUserUid', () => {
         },
       },
       body: {
-        email: 'test@test.com',
-        password: '12345',
+        email: 'test1@test.com',
+        password: '123456',
         roles: {
           admin: false,
         },
@@ -167,10 +214,9 @@ describe('updateUserUid', () => {
   });
 
   it('should show an error 404 if user not exists', (done) => {
-    const user = undefined;
     const req = {
       params: {
-        uid: 'user8@test.com',
+        uid: 'user@test.com',
       },
       headers: {
         user: {
@@ -180,15 +226,14 @@ describe('updateUserUid', () => {
         },
       },
       body: {
-        email: 'user8@test.com',
-        password: '12345',
+        email: 'user@test.com',
+        password: '123456',
         roles: {
           admin: false,
         },
       },
     };
     const next = (code) => {
-      expect(user).toBe(undefined);
       expect(code).toBe(404);
       done();
     };
@@ -199,7 +244,7 @@ describe('updateUserUid', () => {
   it('should show an error 400 if email and password not exists', (done) => {
     const req = {
       params: {
-        uid: 'test@test.com',
+        uid: 'test1@test.com',
       },
       headers: {
         user: {
@@ -222,16 +267,9 @@ describe('updateUserUid', () => {
   });
 
   it('should update an user', (done) => {
-    const user = {
-      email: 'test@test.com',
-      password: '1234567',
-      rol: {
-        admin: false,
-      },
-    };
     const req = {
       params: {
-        uid: 'test@test.com',
+        uid: 'test1@test.com',
       },
       headers: {
         user: {
@@ -241,7 +279,7 @@ describe('updateUserUid', () => {
         },
       },
       body: {
-        email: 'test@test.com',
+        email: 'test1@test.com',
         password: '12345',
         roles: {
           admin: false,
@@ -250,32 +288,55 @@ describe('updateUserUid', () => {
     };
     const resp = {
       send: (response) => {
-        expect(response.email).toBe(user.email);
+        expect(response.email).toBe('test1@test.com');
+        done();
       },
     };
-    const next = (code) => code;
-    done();
-    updateUserUid(req, resp, next);
+    updateUserUid(req, resp);
   });
 });
 
 
 describe('deleteUser', () => {
+  beforeAll(async () => {
+    await database();
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.insertMany([
+      {
+        email: 'test1@test.com',
+        password: '123456',
+        roles: {
+          admin: false,
+        },
+      },
+      {
+        email: 'admin@admin.com',
+        password: '123456',
+        roles: {
+          admin: true,
+        },
+      },
+    ]);
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
   it('should show an error 404 if user not exists', (done) => {
-    const user = undefined;
     const req = {
       params: {
-        uid: 'user8@test.com',
+        uid: 'user@test.com',
       },
       headers: {
         user: {
           roles: {
-            admin: false,
+            admin: true,
           },
         },
       },
       body: {
-        email: 'user8@test.com',
+        email: 'user@test.com',
         password: '12345',
         roles: {
           admin: false,
@@ -283,7 +344,6 @@ describe('deleteUser', () => {
       },
     };
     const next = (code) => {
-      expect(user).toBe(undefined);
       expect(code).toBe(404);
       done();
     };
@@ -294,7 +354,7 @@ describe('deleteUser', () => {
   it('should delete an user', (done) => {
     const req = {
       params: {
-        uid: 'user@test.com',
+        uid: 'test1@test.com',
       },
       headers: {
         user: {
@@ -312,38 +372,38 @@ describe('deleteUser', () => {
     const resp = {
       send: (response) => {
         expect(response.message).toBe('usuario eliminado exitosamente');
+        done();
       },
     };
-    const next = (code) => code;
-    done();
-    deleteUser(req, resp, next);
+    deleteUser(req, resp);
   });
 });
 describe('getUsers', () => {
-  /* beforeAll(async () => {
-    db = await database();
-    const collectionUsers = await db.collection('users');
+  beforeAll(async () => {
+    await database();
+    const collectionUsers = (await database()).collection('users');
     await collectionUsers.insertMany([
       {
-        email: 'user@test',
-        roles: { admin: true },
+        email: 'test1@test.com',
+        password: '123456',
+        roles: {
+          admin: false,
+        },
       },
       {
-        email: 'user2@test',
-        roles: { admin: false },
-      },
-      {
-        email: 'user3@test',
-        roles: { admin: false },
+        email: 'admin@admin.com',
+        password: '123456',
+        roles: {
+          admin: true,
+        },
       },
     ]);
-  }); */
-
-  // afterAll(async () => {
-  //  await (await db()).collection('users').deleteMany({});
-  //  await db().close();
-  // });
-
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('users');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
   it('Deberia de poder obtener 2 usuarios', (done) => {
     const req = {
       query: {},
@@ -353,7 +413,6 @@ describe('getUsers', () => {
     };
     const resp = {
       send: (response) => {
-        // console.log('Soy response...', response);
         expect(response.length).toBe(2);
         expect(response[0].email).toBe('test1@test.com');
         done();

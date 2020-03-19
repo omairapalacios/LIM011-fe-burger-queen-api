@@ -1,16 +1,22 @@
-/* const database = require('../../connection/__mocks__/globalSetup');
+const database = require('../../connection/connect_db');
 
-const { createProduct, updateProductUid, deleteProductUid } = require('../products');
-
-let db;
-
-beforeAll(async () => {
-  db = await database();
-  const collectionProducts = await db.collection('products');
-  await collectionProducts.deleteMany({});
-});
+const {
+  createProduct,
+  getProductUid,
+  getProducts,
+  updateProductUid,
+  deleteProductUid,
+} = require('../products');
 
 describe('createProduct', () => {
+  beforeAll(async () => {
+    await database();
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('products');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
   it('should show an error 400 if not send name and price', (done) => {
     const req = {
       body: {
@@ -28,7 +34,7 @@ describe('createProduct', () => {
     const req = {
       body: {
         name: 'products-01',
-        price: 100,
+        price: 10,
         image: 'imagen.jpg',
         type: 'burger',
         dateEntry: new Date(),
@@ -37,33 +43,40 @@ describe('createProduct', () => {
     const resp = {
       send: (response) => {
         expect(response.name).toBe('products-01');
-        expect(response.price).toBe(100);
+        expect(response.price).toBe(10);
+        done();
       },
     };
-    const next = (code) => code;
-    done();
-    createProduct(req, resp, next);
+    createProduct(req, resp);
   });
 });
-describe.only('updateProductUid', () => {
+describe('updateProductUid', () => {
+  let products;
+
   beforeAll(async () => {
-    const collectionProducts = await db.collection('products');
-    await collectionProducts.insertMany([
+    await database();
+    const collectionUsers = (await database()).collection('products');
+    products = await collectionUsers.insertMany([
       {
-        name: 'products-02',
-        price: 90,
+        name: 'products-01',
+        price: 10,
         image: 'imagen.jpg',
         type: 'burger',
         dateEntry: new Date(),
       },
       {
-        name: 'products-03',
-        price: 70,
+        name: 'products-02',
+        price: 12,
         image: 'imagen.jpg',
         type: 'burger',
         dateEntry: new Date(),
       },
     ]);
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('products');
+    await collectionUsers.deleteMany({});
+    await database().close();
   });
   it('should show an error 404 if ProductID have a format invalid', (done) => {
     const req = {
@@ -98,40 +111,63 @@ describe.only('updateProductUid', () => {
         name: 1,
         price: 'cien',
       },
-    }; */
-
-    console.log(typeof (req.body.name));
-    console.log(typeof (req.body.price));
-/*     const next = (code) => {
-      expect(code).toBe(400);
+    };
+    const next = (code) => {
+      expect(code).toBe(404);
       done();
     };
     updateProductUid(req, {}, next);
-  }); */
-it('should update a product', (done) => {
+  });
+  it('should update a product', (done) => {
+    const productId = products.insertedIds[0];
     const req = {
       params: {
-        productId: '5e7260ccdd15b55308508754',
+        productId,
       },
       body: {
         name: 'products-01',
-        price: 80,
-        image: 'imagen.jpg',
-        type: 'burger',
+        price: 11,
       },
     };
+
     const resp = {
       send: (response) => {
         expect(response.name).toBe('products-01');
-        expect(response.price).toBe(80);
+        expect(response.price).toBe(11);
+        done();
       },
     };
-    const next = (code) => code;
-    done();
-    updateProductUid(req, resp, next);
+    updateProductUid(req, resp);
   });
 });
+
 describe('deleteProduct', () => {
+  let products;
+  beforeAll(async () => {
+    await database();
+    const collectionUsers = (await database()).collection('products');
+    products = await collectionUsers.insertMany([
+      {
+        name: 'products-01',
+        price: 10,
+        image: 'imagen.jpg',
+        type: 'burger',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'products-02',
+        price: 12,
+        image: 'imagen.jpg',
+        type: 'burger',
+        dateEntry: new Date(),
+      },
+    ]);
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('products');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
   it('should show an error 404 if ProductID have a format invalid', (done) => {
     const req = {
       params: {
@@ -156,19 +192,135 @@ describe('deleteProduct', () => {
     };
     deleteProductUid(req, {}, next);
   });
-  it('should delete a product', (done) => {
+  it('should get a product', (done) => {
+    const productId = products.insertedIds[0];
     const req = {
       params: {
-        productId: '5e7260ccdd15b55308508754',
+        productId,
       },
     };
     const resp = {
       send: (response) => {
-        expect(response.message).toBe('usuario eliminado exitosamente');
+        expect(response.message).toBe('producto eliminado exitosamente');
+        done();
       },
     };
-    const next = (code) => code;
-    done();
-    deleteProductUid(req, resp, next);
+    deleteProductUid(req, resp);
+  });
+});
+
+describe('getProductUid', () => {
+  let products;
+  beforeAll(async () => {
+    await database();
+    const collectionUsers = (await database()).collection('products');
+    products = await collectionUsers.insertMany([
+      {
+        name: 'products-01',
+        price: 10,
+        image: 'imagen.jpg',
+        type: 'burger',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'products-02',
+        price: 12,
+        image: 'imagen.jpg',
+        type: 'burger',
+        dateEntry: new Date(),
+      },
+    ]);
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('products');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
+  it('should show an error 404 if ProductID have a format invalid', (done) => {
+    const req = {
+      params: {
+        productId: 'xxxyyz', // noTengoFormatoUid
+      },
+    };
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    getProductUid(req, {}, next);
+  });
+  it('should show an error 404 if product not exists', (done) => {
+    const req = {
+      params: {
+        productId: '5e7260ccdd15b55308508767', // noTengoFormatoUid
+      },
+    };
+    const next = (code) => {
+      expect(code).toBe(404);
+      done();
+    };
+    getProductUid(req, {}, next);
+  });
+  it('should delete a product', (done) => {
+    const productId = products.insertedIds[0];
+    const req = {
+      params: {
+        productId,
+      },
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.name).toBe('products-01');
+        done();
+      },
+    };
+    getProductUid(req, resp);
+  });
+});
+
+describe('getProducts', () => {
+  beforeAll(async () => {
+    await database();
+    const collectionUsers = (await database()).collection('products');
+    products = await collectionUsers.insertMany([
+      {
+        name: 'products-01',
+        price: 10,
+        image: 'imagen.jpg',
+        type: 'burger',
+        dateEntry: new Date(),
+      },
+      {
+        name: 'products-02',
+        price: 12,
+        image: 'imagen.jpg',
+        type: 'burger',
+        dateEntry: new Date(),
+      },
+    ]);
+  });
+  afterAll(async () => {
+    const collectionUsers = (await database()).collection('products');
+    await collectionUsers.deleteMany({});
+    await database().close();
+  });
+  it('should get 2 products', (done) => {
+    const req = {
+      query: {},
+      protocol: 'http',
+      path: '/products',
+      get: () => 'localhost:8080',
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.length).toBe(2);
+        expect(response[0].name).toBe('products-01');
+        done();
+      },
+      set: (nameHeader, header) => {
+        expect(nameHeader).toBe('link');
+        expect(header).toBe('<http://localhost:8080/products?limit=10&page=1>; rel="first", <http://localhost:8080/products?limit=10&page=0>; rel="prev", <http://localhost:8080/products?limit=10&page=2>; rel="next", <http://localhost:8080/products?limit=10&page=1>; rel="last"');
+      },
+    };
+    getProducts(req, resp);
   });
 });

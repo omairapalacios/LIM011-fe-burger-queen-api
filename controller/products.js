@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 const collection = require('../connection/collection');
-const { getPagination, demo } = require('../utils/utils');
+const { getPagination } = require('../utils/utils');
 
 module.exports = {
   getProducts: (req, resp, next) => {
@@ -19,7 +19,8 @@ module.exports = {
             resp.set('link', getPagination(url, page, limit, numbersPages));
             resp.send(product);
           });
-      });
+      })
+      .catch((e) => console.log(e));
   },
   createProduct: (req, resp, next) => {
     if (!req.body.name && !req.body.price) {
@@ -43,7 +44,8 @@ module.exports = {
           type: product.ops[0].type,
           dateEntry: product.ops[0].dateEntry,
         });
-      });
+      })
+      .catch((e) => console.log(e));
   },
   getProductUid: (req, resp, next) => {
     let query;
@@ -66,7 +68,8 @@ module.exports = {
           type: product.type,
           dateEntry: product.dateEntry,
         });
-      });
+      })
+      .catch((e) => console.log(e));
   },
   updateProductUid: (req, resp, next) => {
     // console.log('req.params.productId.. ', req.params.productId);
@@ -80,9 +83,7 @@ module.exports = {
     return collection('products')
       .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
       .then((product) => {
-        console.log('producto encontrado', product);
         if (!product) {
-          console.count();
           return next(404);
         }
         if (typeof (req.body.name) !== 'string'
@@ -104,7 +105,7 @@ module.exports = {
             .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
             .then((product) => resp.send(product)));
       })
-      .catch(() => next(404));
+      .catch((e) => console.log(e));
   },
   deleteProductUid: (req, resp, next) => {
     let query;
@@ -123,6 +124,6 @@ module.exports = {
           .then((collectionProduct) => collectionProduct.deleteOne({ _id: query }))
           .then(() => resp.send({ message: 'producto eliminado exitosamente' }));
       })
-      .catch(() => next(404));
+      .catch((e) => console.log(e));
   },
 };

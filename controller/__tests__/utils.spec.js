@@ -62,7 +62,7 @@ describe('getProducts', () => {
     orderId = (await collectionOrders.insertOne(
       {
         userId: '01234567',
-        client: 'user',
+        client: 'client',
         products: [
           {
             qty: 2,

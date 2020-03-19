@@ -41,8 +41,8 @@ describe('getProducts', () => {
 
   beforeAll(async () => {
     await database();
-    const collectionUsers = (await database()).collection('products');
-    productsIds = (await collectionUsers.insertMany([
+    const collectionProducts = (await database()).collection('products');
+    productsIds = (await collectionProducts.insertMany([
       {
         name: 'products-01',
         price: 10,
@@ -84,7 +84,7 @@ describe('getProducts', () => {
     await database().close();
   });
   it('should get products', (done) => {
-    const arrayIds = [productsIds['0'], productsIds['1']];;
+    const arrayIds = [productsIds['0'], productsIds['1']];
     const resp = {
       send: (response) => {
         expect(response.products[0].product._id).toStrictEqual(productsIds['0']);
@@ -94,7 +94,7 @@ describe('getProducts', () => {
     const next = (code) => code;
     getProducts(arrayIds, orderId, resp, next);
   });
-  it('it should show 404 error if the order does not exist', (done) => {
+  it('it should show an error 404  if the order does not exist', (done) => {
     const arrayIds = [productsIds['0'], productsIds['1']];
     const next = (code) => {
       expect(code).toBe(404);

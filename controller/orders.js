@@ -19,7 +19,8 @@ module.exports = {
             resp.set('link', getPagination(url, page, limit, numbersPages));
             resp.send(order);
           });
-      });
+      })
+      .catch((e) => console.log(e));
   },
   getOrderId: (req, resp, next) => {
     let query;
@@ -35,8 +36,9 @@ module.exports = {
           return next(404);
         }
         const arrayIds = order.products.map((elem) => elem.productId);
-        getProducts(arrayIds, order._id, resp, next);
-      });
+        return getProducts(arrayIds, order._id, resp, next);
+      })
+      .catch((e) => console.log(e));
   },
   createOrder: (req, resp, next) => {
     // console.log('soy req.body', req.body);
@@ -60,8 +62,9 @@ module.exports = {
         // console.log('order.insertedId', order.insertedId);
         // products[ {productId, qty},{productId, qty}]);
         const arrayIds = order.ops[0].products.map((elem) => elem.productId);
-        getProducts(arrayIds, order.insertedId, resp, next);
-      });
+        return getProducts(arrayIds, order.insertedId, resp, next);
+      })
+      .catch((e) => console.log(e));
   },
 
   updateOrders: (req, resp, next) => {
@@ -73,8 +76,6 @@ module.exports = {
     }
     const arrayStatus = ['pending', 'preparing', 'canceled', 'delivering', 'delivered'];
     if (arrayStatus.indexOf(req.body.status) === -1) {
-      /* const demo = (arrayStatus.indexOf(req.body.status)) === -1;
-      console.log('SOY DEMO...', demo); */
       return next(400);
     }
     return collection('orders')
@@ -83,7 +84,7 @@ module.exports = {
         if (!order) {
           return next(404);
         }
-        return collection('orders')
+        collection('orders')
           .then((collectionOrders) => collectionOrders.updateOne({ _id: query }, {
             $set: {
               userId: req.body.userId || order.userId,
@@ -93,17 +94,11 @@ module.exports = {
               dateEntry: req.body.dateEntry || order.dataEntry,
               dateProcessed: req.body.dateProcessed || new Date(),
             },
-          })
-            .then(() => collection('orders')
-              .then((collectionOrders) => collectionOrders.findOne({ _id: query }))
-              .then((order) => {
-                if (!order) {
-                  return next(404);
-                }
-                const arrayIds = order.products.map((elem) => elem.productId);
-                getProducts(arrayIds, order._id, resp, next);
-              })));
-      });
+          }));
+        const arrayIds = order.products.map((elem) => elem.productId);
+        return getProducts(arrayIds, order._id, resp, next);
+      })
+      .catch((e) => console.log(e));
   },
   deleteOrders: (req, resp, next) => {
     let query;
@@ -113,12 +108,15 @@ module.exports = {
       return next(404);
     }
     return collection('orders')
-      .then((collectionOrders) => collectionOrders.deleteOne({ _id: query }))
+      .then((collectionOrders) => collectionOrders.findOne({ _id: query }))
       .then((order) => {
         if (!order) {
           return next(404);
         }
-        resp.send({ message: 'Orden eliminada con exito !' });
-      });
+        return collection('orders')
+          .then((collectionOrders) => collectionOrders.deleteOne({ _id: query }))
+          .then(() => resp.send({ message: 'orden eliminada exitosamente' }));
+      })
+      .catch((e) => console.log(e));
   },
 };

@@ -20,7 +20,7 @@ module.exports = {
             resp.send(product);
           });
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   createProduct: (req, resp, next) => {
     if (!req.body.name && !req.body.price) {
@@ -45,7 +45,7 @@ module.exports = {
           dateEntry: product.ops[0].dateEntry,
         });
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   getProductUid: (req, resp, next) => {
     let query;
@@ -69,7 +69,7 @@ module.exports = {
           dateEntry: product.dateEntry,
         });
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   updateProductUid: (req, resp, next) => {
     // console.log('req.params.productId.. ', req.params.productId);
@@ -77,7 +77,6 @@ module.exports = {
     try {
       query = new ObjectId(req.params.productId);
     } catch (error) {
-      // console.count('estoy en el catch');
       return next(404);
     }
     return collection('products')
@@ -86,10 +85,10 @@ module.exports = {
         if (!product) {
           return next(404);
         }
-        if (typeof (req.body.name) !== 'string'
-            && typeof (req.body.price) !== 'number'
-            && typeof (req.body.image) !== 'string'
-            && typeof (req.body.type) !== 'string') {
+        if (!req.body.name && !req.body.price && !req.body.image && !req.body.type) {
+          return next(400);
+        }
+        if (typeof (req.body.price) !== 'number') {
           return next(400);
         }
         return collection('products')
@@ -105,7 +104,7 @@ module.exports = {
             .then((collectionProduct) => collectionProduct.findOne({ _id: query }))
             .then((product) => resp.send(product)));
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   deleteProductUid: (req, resp, next) => {
     let query;
@@ -124,6 +123,6 @@ module.exports = {
           .then((collectionProduct) => collectionProduct.deleteOne({ _id: query }))
           .then(() => resp.send({ message: 'producto eliminado exitosamente' }));
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
 };

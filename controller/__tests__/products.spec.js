@@ -56,7 +56,7 @@ describe('updateProductUid', () => {
   beforeAll(async () => {
     await database();
     const collectionUsers = (await database()).collection('products');
-    products = await collectionUsers.insertMany([
+    products = (await collectionUsers.insertMany([
       {
         name: 'products-01',
         price: 10,
@@ -71,7 +71,7 @@ describe('updateProductUid', () => {
         type: 'burger',
         dateEntry: new Date(),
       },
-    ]);
+    ])).insertedIds;
   });
   afterAll(async () => {
     const collectionUsers = (await database()).collection('products');
@@ -81,7 +81,7 @@ describe('updateProductUid', () => {
   it('should show an error 404 if ProductID have a format invalid', (done) => {
     const req = {
       params: {
-        productId: 'noTengoFormatoUid', // noTengoFormatoUid
+        productId: 'noTengoFormatoUid',
       },
     };
     const next = (code) => {
@@ -90,10 +90,10 @@ describe('updateProductUid', () => {
     };
     updateProductUid(req, {}, next);
   });
-  it('should show an error 404 if ProductID is not exist', (done) => {
+  it('should show an error 404 if ProductID does not exist', (done) => {
     const req = {
       params: {
-        productId: '5a7260ccdd15b55308508755', // id modificado
+        productId: '5a7260ccdd15b55308508755',
       },
     };
     const next = (code) => {
@@ -102,38 +102,78 @@ describe('updateProductUid', () => {
     };
     updateProductUid(req, {}, next);
   });
-  it('should show an error 400 if properties are wrong', (done) => {
-    const req = {
-      params: {
-        productId: '5e7260ccdd15b55308508754',
-      },
-      body: {
-        name: 1,
-        price: 'cien',
-      },
-    };
-    const next = (code) => {
-      expect(code).toBe(404);
-      done();
-    };
-    updateProductUid(req, {}, next);
-  });
-  it('should update a product', (done) => {
-    const productId = products.insertedIds[0];
+  it('should show an error 400 if propertie price is wrong', (done) => {
+    const productId = products['0'];
     const req = {
       params: {
         productId,
       },
       body: {
-        name: 'products-01',
-        price: 11,
+        price: 'cien',
       },
     };
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    };
+    updateProductUid(req, {}, next);
+  });
+  it('should show an error 400 if properties are empty', (done) => {
+    const productId = products['0'];
+    const req = {
+      params: {
+        productId,
+      },
+      body: {
+      },
+    };
+    const next = (code) => {
+      expect(code).toBe(400);
+      done();
+    };
+    updateProductUid(req, {}, next);
+  });
+  it('should update a product', (done) => {
+    const productId = products['0'];
 
+    const req = {
+      params: {
+        productId,
+      },
+      body: {
+        name: 'burger1',
+        price: 11,
+        image: 'imageburger.jpg',
+        type: 'food',
+      },
+    };
     const resp = {
       send: (response) => {
-        expect(response.name).toBe('products-01');
+        expect(response.name).toBe('burger1');
         expect(response.price).toBe(11);
+        expect(response.image).toBe('imageburger.jpg');
+        expect(response.type).toBe('food');
+        done();
+      },
+    };
+    updateProductUid(req, resp);
+  });
+  it('should update a product data de bd', (done) => {
+    const productId = products['1'];
+    const req = {
+      params: {
+        productId,
+      },
+      body: {
+        price: 10,
+      },
+    };
+    const resp = {
+      send: (response) => {
+        expect(response.name).toBe('products-02');
+        expect(response.price).toBe(10);
+        expect(response.image).toBe('imagen.jpg');
+        expect(response.type).toBe('burger');
         done();
       },
     };
@@ -281,7 +321,7 @@ describe('getProducts', () => {
   beforeAll(async () => {
     await database();
     const collectionUsers = (await database()).collection('products');
-    products = await collectionUsers.insertMany([
+    await collectionUsers.insertMany([
       {
         name: 'products-01',
         price: 10,

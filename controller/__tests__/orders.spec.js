@@ -68,14 +68,13 @@ describe('createOrder', () => {
         dateProcessed: new Date(),
       },
     };
-    const next = (code) => code;
     const resp = {
       send: (response) => {
         expect(response.products[0].product._id).toStrictEqual(productsIds['0']);
         done();
       },
     };
-    createOrder(req, resp, next);
+    createOrder(req, resp);
   });
 });
 
@@ -220,14 +219,13 @@ describe('updateOrder', () => {
         dateProcessed: new Date(),
       },
     };
-    const next = (code) => code;
     const resp = {
       send: (response) => {
         expect(response.products[0].product._id).toStrictEqual(productsIds['0']);
         done();
       },
     };
-    updateOrders(req, resp, next);
+    updateOrders(req, resp);
   });
 });
 

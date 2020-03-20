@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const collection = require('../connection/collection');
 
 module.exports = (secret) => (req, resp, next) => {
-
   // obtiene cabecera de autenticación
   const { authorization } = req.headers;
 

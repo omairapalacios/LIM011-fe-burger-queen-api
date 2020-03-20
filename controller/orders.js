@@ -20,7 +20,7 @@ module.exports = {
             resp.send(order);
           });
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   getOrderId: (req, resp, next) => {
     let query;
@@ -38,7 +38,7 @@ module.exports = {
         const arrayIds = order.products.map((elem) => elem.productId);
         return getProducts(arrayIds, order._id, resp, next);
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   createOrder: (req, resp, next) => {
     // console.log('soy req.body', req.body);
@@ -64,7 +64,7 @@ module.exports = {
         const arrayIds = order.ops[0].products.map((elem) => elem.productId);
         return getProducts(arrayIds, order.insertedId, resp, next);
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
 
   updateOrders: (req, resp, next) => {
@@ -98,7 +98,7 @@ module.exports = {
         const arrayIds = order.products.map((elem) => elem.productId);
         return getProducts(arrayIds, order._id, resp, next);
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   deleteOrders: (req, resp, next) => {
     let query;
@@ -117,6 +117,6 @@ module.exports = {
           .then((collectionOrders) => collectionOrders.deleteOne({ _id: query }))
           .then(() => resp.send({ message: 'orden eliminada exitosamente' }));
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
 };

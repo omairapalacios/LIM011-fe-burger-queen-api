@@ -61,9 +61,7 @@ module.exports = {
             });
           });
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch(() => next(500));
   },
   getUserUid: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
@@ -81,7 +79,7 @@ module.exports = {
           });
         }
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
   updateUserUid: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
@@ -115,7 +113,7 @@ module.exports = {
             .then((collectionProduct) => collectionProduct.findOne(uid))
             .then((user) => resp.send(user)));
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
 
   deleteUser: (req, resp, next) => {
@@ -130,6 +128,6 @@ module.exports = {
           .then((collectionUser) => collectionUser.deleteOne(uid))
           .then(() => resp.send({ message: 'usuario eliminado exitosamente' }));
       })
-      .catch((e) => console.log(e));
+      .catch(() => next(500));
   },
 };

@@ -8,10 +8,10 @@ const {
 
 const {
   getUsers,
-  getUserUid,
+  getUserId,
   createUser,
-  updateUserUid,
-  deleteUser,
+  updateUserId,
+  deleteUserId,
 } = require('../controller/users');
 
 const initAdminUser = (app, next) => {
@@ -109,7 +109,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.get('/users/:uid', requireAdminOrUser, getUserUid);
+  app.get('/users/:uid', requireAdminOrUser, getUserId);
 
   /**
    * @name POST /users
@@ -154,7 +154,7 @@ module.exports = (app, next) => {
    * @code {403} una usuaria no admin intenta de modificar sus `roles`
    * @code {404} si la usuaria solicitada no existe
    */
-  app.put('/users/:uid', requireAdminOrUser, updateUserUid);
+  app.put('/users/:uid', requireAdminOrUser, updateUserId);
 
   /**
    * @name DELETE /users
@@ -172,7 +172,7 @@ module.exports = (app, next) => {
    * @code {403} si no es ni admin o la misma usuaria
    * @code {404} si la usuaria solicitada no existe
    */
-  app.delete('/users/:uid', requireAdminOrUser, deleteUser);
+  app.delete('/users/:uid', requireAdminOrUser, deleteUserId);
 
   initAdminUser(app, next);
 };

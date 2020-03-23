@@ -67,7 +67,7 @@ module.exports = {
       .catch(() => next(500));
   },
 
-  updateOrders: (req, resp, next) => {
+  updateOrder: (req, resp, next) => {
     let query;
     try {
       query = new ObjectId(req.params.orderId);
@@ -100,7 +100,7 @@ module.exports = {
       })
       .catch(() => next(500));
   },
-  deleteOrders: (req, resp, next) => {
+  deleteOrder: (req, resp, next) => {
     let query;
     try {
       query = new ObjectId(req.params.orderId);

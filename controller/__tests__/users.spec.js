@@ -2,10 +2,10 @@ const database = require('../../connection/connect_db');
 
 const {
   createUser,
-  getUserUid,
+  getUserId,
   getUsers,
-  updateUserUid,
-  deleteUser,
+  updateUserId,
+  deleteUserId,
 } = require('../users');
 
 describe('createUsers', () => {
@@ -104,7 +104,7 @@ describe('createUsers', () => {
   });
 });
 
-describe('getUserUid', () => {
+describe('getUserId', () => {
   beforeAll(async () => {
     await database();
     const collectionUsers = (await database()).collection('users');
@@ -141,7 +141,7 @@ describe('getUserUid', () => {
       expect(code).toBe(404);
       done();
     };
-    getUserUid(req, {}, next);
+    getUserId(req, {}, next);
   });
   it('should get an user', (done) => {
     const req = {
@@ -156,11 +156,11 @@ describe('getUserUid', () => {
         done();
       },
     };
-    getUserUid(req, resp);
+    getUserId(req, resp);
   });
 });
 
-describe('updateUserUid', () => {
+describe('updateUserId', () => {
   beforeAll(async () => {
     await database();
     const collectionUsers = (await database()).collection('users');
@@ -210,7 +210,7 @@ describe('updateUserUid', () => {
       expect(code).toBe(403);
       done();
     };
-    updateUserUid(req, {}, next);
+    updateUserId(req, {}, next);
   });
 
   it('should show an error 404 if user not exists', (done) => {
@@ -237,7 +237,7 @@ describe('updateUserUid', () => {
       expect(code).toBe(404);
       done();
     };
-    updateUserUid(req, {}, next);
+    updateUserId(req, {}, next);
   });
 
 
@@ -263,7 +263,7 @@ describe('updateUserUid', () => {
       expect(code).toBe(400);
       done();
     };
-    updateUserUid(req, {}, next);
+    updateUserId(req, {}, next);
   });
 
   it('should update an user', (done) => {
@@ -292,12 +292,12 @@ describe('updateUserUid', () => {
         done();
       },
     };
-    updateUserUid(req, resp);
+    updateUserId(req, resp);
   });
 });
 
 
-describe('deleteUser', () => {
+describe('deleteUserId', () => {
   beforeAll(async () => {
     await database();
     const collectionUsers = (await database()).collection('users');
@@ -347,7 +347,7 @@ describe('deleteUser', () => {
       expect(code).toBe(404);
       done();
     };
-    deleteUser(req, {}, next);
+    deleteUserId(req, {}, next);
   });
 
 
@@ -375,7 +375,7 @@ describe('deleteUser', () => {
         done();
       },
     };
-    deleteUser(req, resp);
+    deleteUserId(req, resp);
   });
 });
 describe('getUsers', () => {

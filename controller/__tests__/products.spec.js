@@ -2,10 +2,10 @@ const database = require('../../connection/connect_db');
 
 const {
   createProduct,
-  getProductUid,
+  getProductId,
   getProducts,
-  updateProductUid,
-  deleteProductUid,
+  updateProductId,
+  deleteProductId,
 } = require('../products');
 
 describe('createProduct', () => {
@@ -50,7 +50,7 @@ describe('createProduct', () => {
     createProduct(req, resp);
   });
 });
-describe('updateProductUid', () => {
+describe('updateProductId', () => {
   let products;
 
   beforeAll(async () => {
@@ -88,7 +88,7 @@ describe('updateProductUid', () => {
       expect(code).toBe(404);
       done();
     };
-    updateProductUid(req, {}, next);
+    updateProductId(req, {}, next);
   });
   it('should show an error 404 if ProductID does not exist', (done) => {
     const req = {
@@ -100,7 +100,7 @@ describe('updateProductUid', () => {
       expect(code).toBe(404);
       done();
     };
-    updateProductUid(req, {}, next);
+    updateProductId(req, {}, next);
   });
   it('should show an error 400 if propertie price is wrong', (done) => {
     const productId = products['0'];
@@ -116,7 +116,7 @@ describe('updateProductUid', () => {
       expect(code).toBe(400);
       done();
     };
-    updateProductUid(req, {}, next);
+    updateProductId(req, {}, next);
   });
   it('should show an error 400 if properties are empty', (done) => {
     const productId = products['0'];
@@ -131,7 +131,7 @@ describe('updateProductUid', () => {
       expect(code).toBe(400);
       done();
     };
-    updateProductUid(req, {}, next);
+    updateProductId(req, {}, next);
   });
   it('should update a product', (done) => {
     const productId = products['0'];
@@ -156,7 +156,7 @@ describe('updateProductUid', () => {
         done();
       },
     };
-    updateProductUid(req, resp);
+    updateProductId(req, resp);
   });
   it('should update a product data de bd', (done) => {
     const productId = products['1'];
@@ -177,11 +177,11 @@ describe('updateProductUid', () => {
         done();
       },
     };
-    updateProductUid(req, resp);
+    updateProductId(req, resp);
   });
 });
 
-describe('deleteProduct', () => {
+describe('deleteProductId', () => {
   let products;
   beforeAll(async () => {
     await database();
@@ -218,7 +218,7 @@ describe('deleteProduct', () => {
       expect(code).toBe(404);
       done();
     };
-    deleteProductUid(req, {}, next);
+    deleteProductId(req, {}, next);
   });
   it('should show an error 404 if product not exists', (done) => {
     const req = {
@@ -230,7 +230,7 @@ describe('deleteProduct', () => {
       expect(code).toBe(404);
       done();
     };
-    deleteProductUid(req, {}, next);
+    deleteProductId(req, {}, next);
   });
   it('should get a product', (done) => {
     const productId = products.insertedIds[0];
@@ -245,11 +245,11 @@ describe('deleteProduct', () => {
         done();
       },
     };
-    deleteProductUid(req, resp);
+    deleteProductId(req, resp);
   });
 });
 
-describe('getProductUid', () => {
+describe('getProductId', () => {
   let products;
   beforeAll(async () => {
     await database();
@@ -286,7 +286,7 @@ describe('getProductUid', () => {
       expect(code).toBe(404);
       done();
     };
-    getProductUid(req, {}, next);
+    getProductId(req, {}, next);
   });
   it('should show an error 404 if product not exists', (done) => {
     const req = {
@@ -298,7 +298,7 @@ describe('getProductUid', () => {
       expect(code).toBe(404);
       done();
     };
-    getProductUid(req, {}, next);
+    getProductId(req, {}, next);
   });
   it('should delete a product', (done) => {
     const productId = products.insertedIds[0];
@@ -313,7 +313,7 @@ describe('getProductUid', () => {
         done();
       },
     };
-    getProductUid(req, resp);
+    getProductId(req, resp);
   });
 });
 

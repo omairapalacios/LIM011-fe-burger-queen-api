@@ -6,9 +6,9 @@ const {
 const {
   getProducts,
   createProduct,
-  getProductUid,
-  updateProductUid,
-  deleteProductUid,
+  getProductId,
+  updateProductId,
+  deleteProductId,
 } = require('../controller/products');
 
 /** @module products */
@@ -54,7 +54,7 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    * @code {404} si el producto con `productId` indicado no existe
    */
-  app.get('/products/:productId', requireAuth, getProductUid);
+  app.get('/products/:productId', requireAuth, getProductId);
 
   /**
    * @name POST /products
@@ -104,7 +104,7 @@ module.exports = (app, nextMain) => {
    * @code {403} si no es admin
    * @code {404} si el producto con `productId` indicado no existe
    */
-  app.put('/products/:productId', requireAdmin, updateProductUid);
+  app.put('/products/:productId', requireAdmin, updateProductId);
 
   /**
    * @name DELETE /products
@@ -124,7 +124,7 @@ module.exports = (app, nextMain) => {
    * @code {403} si no es ni admin
    * @code {404} si el producto con `productId` indicado no existe
    */
-  app.delete('/products/:productId', requireAdmin, deleteProductUid);
+  app.delete('/products/:productId', requireAdmin, deleteProductId);
 
   nextMain();
 };

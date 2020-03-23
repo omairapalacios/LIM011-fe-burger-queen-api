@@ -4,8 +4,8 @@ const {
   createOrder,
   getOrderId,
   getOrders,
-  updateOrders,
-  deleteOrders,
+  updateOrder,
+  deleteOrder,
 } = require('../orders');
 
 describe('createOrder', () => {
@@ -136,7 +136,7 @@ describe('updateOrder', () => {
       expect(code).toBe(404);
       done();
     };
-    updateOrders(req, {}, next);
+    updateOrder(req, {}, next);
   });
   it('should show an error 400 when status does not valid', (done) => {
     const req = {
@@ -165,7 +165,7 @@ describe('updateOrder', () => {
       expect(code).toBe(400);
       done();
     };
-    updateOrders(req, {}, next);
+    updateOrder(req, {}, next);
   });
   it('should show an error 404 if order does not exists', (done) => {
     const req = {
@@ -194,7 +194,7 @@ describe('updateOrder', () => {
       expect(code).toBe(404);
       done();
     };
-    updateOrders(req, {}, next);
+    updateOrder(req, {}, next);
   });
   it('should update a new order', (done) => {
     const req = {
@@ -225,7 +225,7 @@ describe('updateOrder', () => {
         done();
       },
     };
-    updateOrders(req, resp);
+    updateOrder(req, resp);
   });
 });
 
@@ -287,7 +287,7 @@ describe('deleteOrder', () => {
       expect(code).toBe(404);
       done();
     };
-    deleteOrders(req, {}, next);
+    deleteOrder(req, {}, next);
   });
   it('should show an error 404 if order does not exists', (done) => {
     const req = {
@@ -299,7 +299,7 @@ describe('deleteOrder', () => {
       expect(code).toBe(404);
       done();
     };
-    deleteOrders(req, {}, next);
+    deleteOrder(req, {}, next);
   });
   it('should delete a new order', (done) => {
     const req = {
@@ -313,7 +313,7 @@ describe('deleteOrder', () => {
         done();
       },
     };
-    deleteOrders(req, resp);
+    deleteOrder(req, resp);
   });
 });
 

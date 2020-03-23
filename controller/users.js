@@ -63,7 +63,7 @@ module.exports = {
       })
       .catch(() => next(500));
   },
-  getUserUid: (req, resp, next) => {
+  getUserId: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
     return collection('users')
       .then((collectionUser) => collectionUser.findOne(uid))
@@ -81,7 +81,7 @@ module.exports = {
       })
       .catch(() => next(500));
   },
-  updateUserUid: (req, resp, next) => {
+  updateUserId: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
     // const { email, password, roles } = req.body;
 
@@ -116,7 +116,7 @@ module.exports = {
       .catch(() => next(500));
   },
 
-  deleteUser: (req, resp, next) => {
+  deleteUserId: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
     return collection('users')
       .then((collectionUser) => collectionUser.findOne(uid))

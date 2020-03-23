@@ -47,7 +47,7 @@ module.exports = {
       })
       .catch(() => next(500));
   },
-  getProductUid: (req, resp, next) => {
+  getProductId: (req, resp, next) => {
     let query;
     try {
       query = new ObjectId(req.params.productId);
@@ -71,7 +71,7 @@ module.exports = {
       })
       .catch(() => next(500));
   },
-  updateProductUid: (req, resp, next) => {
+  updateProductId: (req, resp, next) => {
     // console.log('req.params.productId.. ', req.params.productId);
     let query;
     try {
@@ -106,7 +106,7 @@ module.exports = {
       })
       .catch(() => next(500));
   },
-  deleteProductUid: (req, resp, next) => {
+  deleteProductId: (req, resp, next) => {
     let query;
     try {
       query = new ObjectId(req.params.productId);

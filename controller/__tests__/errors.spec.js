@@ -3,26 +3,26 @@ const database = require('../../connection/connect_db');
 
 const {
   createUser,
-  getUserUid,
+  getUserId,
   getUsers,
-  updateUserUid,
-  deleteUser,
+  updateUserId,
+  deleteUserId,
 } = require('../users');
 
 const {
   getProducts,
   createProduct,
-  getProductUid,
-  updateProductUid,
-  deleteProductUid,
+  getProductId,
+  updateProductId,
+  deleteProductId,
 } = require('../products');
 
 const {
   getOrders,
   getOrderId,
   createOrder,
-  updateOrders,
-  deleteOrders,
+  updateOrder,
+  deleteOrder,
 } = require('../orders');
 
 describe('users errors', () => {
@@ -48,7 +48,7 @@ describe('users errors', () => {
     };
     createUser(req, {}, next);
   });
-  it('should show an error 500 when exist an error with database: getUserUid', (done) => {
+  it('should show an error 500 when exist an error with database: getUserId', (done) => {
     const req = {
       params: {
         uid: 'test1@test.com',
@@ -58,7 +58,7 @@ describe('users errors', () => {
       expect(code).toBe(500);
       done();
     };
-    getUserUid(req, {}, next);
+    getUserId(req, {}, next);
   });
   it('should show an error 500 when exist an error with database: updateUser', (done) => {
     const req = {
@@ -84,7 +84,7 @@ describe('users errors', () => {
       expect(code).toBe(500);
       done();
     };
-    updateUserUid(req, {}, next);
+    updateUserId(req, {}, next);
   });
 
   it('should show an error 500 when exist an error with database: deleteUser', (done) => {
@@ -97,7 +97,7 @@ describe('users errors', () => {
       expect(code).toBe(500);
       done();
     };
-    deleteUser(req, {}, next);
+    deleteUserId(req, {}, next);
   });
   it('should show an error 500 when exist an error with database: getUsers', (done) => {
     const req = {
@@ -137,7 +137,7 @@ describe('products errors', () => {
     };
     createProduct(req, {}, next);
   });
-  it('should show an error 500 when exist an error with database: getProductUid', (done) => {
+  it('should show an error 500 when exist an error with database: getProductId', (done) => {
     const req = {
       params: {
         productId: '5e7260ccdd15b55308508754',
@@ -147,7 +147,7 @@ describe('products errors', () => {
       expect(code).toBe(500);
       done();
     };
-    getProductUid(req, {}, next);
+    getProductId(req, {}, next);
   });
   it('should show an error 500 when exist an error with database: updateProductUid', (done) => {
     const req = {
@@ -163,7 +163,7 @@ describe('products errors', () => {
       expect(code).toBe(500);
       done();
     };
-    updateProductUid(req, {}, next);
+    updateProductId(req, {}, next);
   });
 
   it('should show an error 500 when exist an error with database: deleteProductUid', (done) => {
@@ -176,7 +176,7 @@ describe('products errors', () => {
       expect(code).toBe(500);
       done();
     };
-    deleteProductUid(req, {}, next);
+    deleteProductId(req, {}, next);
   });
   it('should show an error 500 when exist an error with database: getProducts', (done) => {
     const req = {
@@ -266,7 +266,7 @@ describe('orders errors', () => {
       expect(code).toBe(500);
       done();
     };
-    updateOrders(req, {}, next);
+    updateOrder(req, {}, next);
   });
 
   it('should show an error 500 when exist an error with database: deleteOrder', (done) => {
@@ -279,7 +279,7 @@ describe('orders errors', () => {
       expect(code).toBe(500);
       done();
     };
-    deleteOrders(req, {}, next);
+    deleteOrder(req, {}, next);
   });
   it('should show an error 500 when exist an error with database: getOrders', (done) => {
     const req = {

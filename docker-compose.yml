@@ -4,16 +4,17 @@ services:
     # TODO: configura tu imagen de base de datos, te recomendamos una de las sgtes:
     # https://hub.docker.com/_/mysql
     # https://hub.docker.com/_/mongo
+    image: mongo
     networks:
       - private
   node:
     image: "node:10" # https://hub.docker.com/_/node/
     user: "node"
-    working_dir: /home/node/app
+    working_dir: /home/node/app # crear una carpeta en el directorio y configurarlo como directorio actual donde vamos a trabajar
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - DB_URL=<CONNECTION STRING>
+      - DB_URL=mongodb://db:27017/burger-queen
     env_file:
       - secrets.env # los _secrets_ a incluir como variables de entorno. Usa el archivo `sample.secrets.env` como guia
     volumes:

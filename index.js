@@ -28,5 +28,4 @@ connectMongodb()
         console.info(`App listening on port ${port}`);
       });
     });
-  })
-  .catch((e) => console.log(e));
+  });

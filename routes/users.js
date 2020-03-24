@@ -37,7 +37,7 @@ const initAdminUser = (app, next) => {
           .then((collectionUser) => collectionUser.insertOne(adminUser))
           .then(() => next());
       }
-      return next(403);
+      return next();
     }).catch(() => next(500));
 };
 

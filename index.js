@@ -1,4 +1,6 @@
 const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
 const config = require('./config');
 const connectMongodb = require('./connection/connect_db');
 const authMiddleware = require('./middleware/auth');
@@ -13,14 +15,17 @@ connectMongodb()
   .then(() => {
     app.set('config', config);
     app.set('pkg', pkg);
-
+    // habilita el intercambio de contenido para ese dominio: consumo del api
+    app.use(cors({
+      origin: 'http://localhost:4200/',
+    }));
+    // añade reglas de seguridad
+    app.use(helmet());
     // parse application/x-www-form-urlencoded
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
     app.use(authMiddleware(secret));
-
     // registrar rutas
-
     routes(app, (err) => {
       if (err) throw err;
       app.use(errorHandler);

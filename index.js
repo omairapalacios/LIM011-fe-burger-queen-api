@@ -10,7 +10,17 @@ const pkg = require('./package.json');
 
 const { port, secret } = config;
 const app = express();
+/* BUENAS PRACTICAS EN PRODUCCIÓN
 
+
+-Eliminar hardcoded keys (secrets o shh keys)
+-Encapsular codigo espagguetti
+-Revisar la estructura del proyecto
+-Minificar codigo (build scripts)
+-Agregar soporte de cache
+-Agregar HTTPS y CORS (definir dominios /subdominios que pueden consumir el API)
+-Revisar practicas de seguridad (helmet) OWASP (Lista las 10 vulnerabilidades mas criticas de app web)
+ */
 connectMongodb()
   .then(() => {
     app.set('config', config);

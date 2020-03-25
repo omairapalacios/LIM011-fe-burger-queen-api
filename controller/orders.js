@@ -17,7 +17,8 @@ module.exports = {
           .then((collectionOrders) => collectionOrders.find().skip(skip).limit(limit).toArray())
           .then((order) => {
             resp.set('link', getPagination(url, page, limit, numbersPages));
-            resp.send(order);
+            const arrayIds = order.products.map((elem) => elem.productId);
+            return getProducts(arrayIds, order._id, resp, next);
           });
       })
       .catch(() => next(500));
@@ -47,7 +48,7 @@ module.exports = {
     }
     const newOrder = {
       userId: req.body.userId,
-      client: '',
+      client: req.body.client || '',
       products: req.body.products.map((product) => ({
         productId: new ObjectId(product.productId),
         qty: product.qty,

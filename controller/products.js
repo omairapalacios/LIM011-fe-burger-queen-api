@@ -29,7 +29,7 @@ module.exports = {
     const newProduct = {
       name: req.body.name,
       price: req.body.price,
-      image: req.body.imagen,
+      image: req.body.image,
       type: req.body.type,
       dateEntry: new Date(),
     };

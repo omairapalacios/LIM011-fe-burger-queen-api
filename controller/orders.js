@@ -15,10 +15,9 @@ module.exports = {
         const skip = (limit * page) - limit;
         return collection('orders')
           .then((collectionOrders) => collectionOrders.find().skip(skip).limit(limit).toArray())
-          .then((order) => {
+          .then((orders) => {
             resp.set('link', getPagination(url, page, limit, numbersPages));
-            const arrayIds = order.products.map((elem) => elem.productId);
-            return getProducts(arrayIds, order._id, resp, next);
+            resp.send(orders);
           });
       })
       .catch(() => next(500));

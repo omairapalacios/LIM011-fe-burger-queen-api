@@ -15,10 +15,11 @@ connectMongodb()
   .then(() => {
     app.set('config', config);
     app.set('pkg', pkg);
+    app.use(cors());
     // habilita el intercambio de contenido para ese dominio: consumo del api
-    app.use(cors({
+    /*   app.use(cors({
       origin: 'http://localhost:4200/',
-    }));
+    })); */
     // añade reglas de seguridad
     app.use(helmet());
     // parse application/x-www-form-urlencoded

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { ObjectId } = require('mongodb');
 const collection = require('../connection/collection');
 
@@ -37,7 +38,6 @@ module.exports.getProducts = (arrayIds, orderId, resp, next) => collection('prod
         if (order === null) {
           return next(404);
         }
-        // eslint-disable-next-line no-param-reassign
         order.products = order.products.map((elemProduct) => ({
           qty: elemProduct.qty,
           product: arrayProducts.find((p) => p._id.equals(elemProduct.productId)),

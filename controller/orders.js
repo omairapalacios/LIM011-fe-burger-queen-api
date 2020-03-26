@@ -17,7 +17,23 @@ module.exports = {
           .then((collectionOrders) => collectionOrders.find().skip(skip).limit(limit).toArray())
           .then((orders) => {
             resp.set('link', getPagination(url, page, limit, numbersPages));
-            resp.send(orders);
+            const allOrders = orders.map((order) => {
+              const arrayIds = order.products.map((elem) => elem.productId);
+              return collection('products')
+                .then((collectionProducts) => collectionProducts.find({ _id: { $in: arrayIds } })
+                  .toArray()
+                  .then((arrayProducts) => {
+                    order.products = order.products.map((elemProduct) => ({
+                      qty: elemProduct.qty,
+                      product: arrayProducts.find((p) => p._id.equals(elemProduct.productId)),
+                    }));
+                    return order;
+                  }));
+            });
+            Promise.all(allOrders)
+              .then((values) => {
+                resp.send(values);
+              });
           });
       })
       .catch(() => next(500));

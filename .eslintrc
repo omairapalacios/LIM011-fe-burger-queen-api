@@ -8,6 +8,7 @@
   },
   "rules": {
     "no-underscore-dangle": "off",
+    "no-param-reassign":"off",
     "consistent-return": "off",
     "no-shadow": "off",
     "no-nested-ternary":"off",

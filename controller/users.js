@@ -83,8 +83,7 @@ module.exports = {
   },
   updateUserId: (req, resp, next) => {
     const uid = getIdOrEmail(req.params.uid);
-    // const { email, password, roles } = req.body;
-
+    
     return collection('users')
       .then((collectionUser) => collectionUser.findOne(uid))
       .then((user) => {
@@ -106,7 +105,7 @@ module.exports = {
                 password: req.body.password
                   ? bcrypt.hashSync(req.body.password, 10)
                   : user.password,
-                roles: req.body.password || user.roles,
+                roles: req.body.user || user.roles,
               },
             }))
           .then(() => collection('users')

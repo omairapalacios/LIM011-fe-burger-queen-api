@@ -105,7 +105,7 @@ module.exports = {
                 password: req.body.password
                   ? bcrypt.hashSync(req.body.password, 10)
                   : user.password,
-                roles: req.body.user || user.roles,
+                roles: req.body.roles || user.roles,
               },
             }))
           .then(() => collection('users')

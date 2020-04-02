@@ -25,6 +25,7 @@ connectMongodb()
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
     app.use(authMiddleware(secret));
+    app.use('/', express.static('dist'));
     // registrar rutas
     routes(app, (err) => {
       if (err) throw err;
